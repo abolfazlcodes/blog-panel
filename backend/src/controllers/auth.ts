@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
 import { IUser } from "../types/user.type.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import CustomError from "../utils/customError.js";
-import jwt from "jsonwebtoken";
 import { TOKEN_EXPIRY_TIME } from "../configs/constants.js";
 
 const STATIC_USERS: IUser[] = [
@@ -21,6 +23,59 @@ const STATIC_USERS: IUser[] = [
     password: "135792468",
   },
 ];
+
+export const createUserHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const firstName = req.body?.first_name;
+  const lastName = req.body?.last_name;
+  const email = req.body?.email;
+  const password = req.body?.password;
+
+  try {
+    // look if email/user already exists
+    const isAlreadySignedUp = STATIC_USERS.find(
+      (item) => item?.email === email
+    );
+
+    if (isAlreadySignedUp) {
+      const error = new CustomError("User already exists.");
+      error.statusCode = HTTP_STATUS_CODES.StatusUnauthorized;
+      throw error;
+    }
+
+    // hash the password
+    let hashedPassword;
+    await bcrypt
+      .hash(password, 12)
+      .then((result) => {
+        hashedPassword = result;
+
+        const newUser = {
+          id: STATIC_USERS?.length + 1,
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          password: hashedPassword,
+        };
+
+        STATIC_USERS.push(newUser);
+
+        res.status(HTTP_STATUS_CODES.StatusCreated).json({
+          message: "User was created successfully",
+          users: STATIC_USERS,
+        });
+      })
+      .catch((error) => {
+        throw error;
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const loginHandler = (
   req: Request,
   res: Response,
@@ -37,6 +92,8 @@ export const loginHandler = (
       error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
       throw error;
     }
+
+    // todo: check for password and compare
 
     // create token for the user
     const token = jwt.sign(
