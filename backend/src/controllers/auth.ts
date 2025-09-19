@@ -48,40 +48,45 @@ export const createUserHandler = async (
 
     // hash the password
     let hashedPassword;
-    await bcrypt
-      .hash(password, 12)
-      .then((result) => {
-        hashedPassword = result;
 
-        const newUser = {
-          id: STATIC_USERS?.length + 1,
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          password: hashedPassword,
-        };
+    const result = await bcrypt.hash(password, 12);
 
-        STATIC_USERS.push(newUser);
+    if (result) {
+      hashedPassword = result;
 
-        res.status(HTTP_STATUS_CODES.StatusCreated).json({
-          message: "User was created successfully",
-          users: STATIC_USERS,
-        });
-      })
-      .catch((error) => {
-        throw error;
+      const newUser = {
+        id: STATIC_USERS?.length + 1,
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password: hashedPassword,
+      };
+
+      STATIC_USERS.push(newUser);
+
+      res.status(HTTP_STATUS_CODES.StatusCreated).json({
+        message: "User was created successfully",
+        users: STATIC_USERS,
       });
+    } else {
+      const error = new CustomError(
+        "Something went wrong. Please try again later"
+      );
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
   } catch (error) {
     next(error);
   }
 };
 
-export const loginHandler = (
+export const loginHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const email = req?.body?.email;
+  const plainPassword = req.body?.password;
 
   try {
     // look up for the user email in db
@@ -93,26 +98,34 @@ export const loginHandler = (
       throw error;
     }
 
-    // todo: check for password and compare
+    const isMatch = await bcrypt.compare(plainPassword, user?.password);
 
-    // create token for the user
-    const token = jwt.sign(
-      {
-        userId: user?.id,
-        email: user?.email,
-      },
-      process.env.JWT_SECRET_KEY!,
-      {
-        expiresIn: TOKEN_EXPIRY_TIME,
-        algorithm: "HS256",
-      }
-    );
+    if (isMatch) {
+      // create token for the user
+      const token = jwt.sign(
+        {
+          userId: user?.id,
+          email: user?.email,
+        },
+        process.env.JWT_SECRET_KEY!,
+        {
+          expiresIn: TOKEN_EXPIRY_TIME,
+          algorithm: "HS256",
+        }
+      );
 
-    res.status(200).json({
-      message: "login was successful",
-      token,
-      expiresAt: new Date(Date.now() + TOKEN_EXPIRY_TIME * 1000).toISOString(),
-    });
+      res.status(200).json({
+        message: "login was successful",
+        token,
+        expiresAt: new Date(
+          Date.now() + TOKEN_EXPIRY_TIME * 1000
+        ).toISOString(),
+      });
+    } else {
+      const error = new CustomError("Email or password is wrong!");
+      error.statusCode = HTTP_STATUS_CODES.StatusUnauthorized;
+      throw error;
+    }
   } catch (error) {
     next(error);
   }
