@@ -8,3 +8,6 @@
 
 # TypeScript build output
 /dist
+
+/generated/prisma
+notes.md
