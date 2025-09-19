@@ -2,43 +2,22 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { IUser } from "../types/user.type.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import CustomError from "../utils/customError.js";
 import { TOKEN_EXPIRY_TIME } from "../configs/constants.js";
-
-const STATIC_USERS: IUser[] = [
-  {
-    id: 1,
-    first_name: "Abolfazl",
-    last_name: "Jamshidi",
-    email: "abolfazljamshididev@gmail.com",
-    password: "12345678",
-  },
-  {
-    id: 2,
-    first_name: "Arman",
-    last_name: "Ahmadi",
-    email: "armanahmadidev@gmail.com",
-    password: "135792468",
-  },
-];
+import prisma from "../prisma.js";
 
 export const createUserHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const firstName = req.body?.first_name;
-  const lastName = req.body?.last_name;
-  const email = req.body?.email;
-  const password = req.body?.password;
+  const { first_name, last_name, email, password } = req.body;
 
   try {
-    // look if email/user already exists
-    const isAlreadySignedUp = STATIC_USERS.find(
-      (item) => item?.email === email
-    );
+    const isAlreadySignedUp = await prisma.user.findUnique({
+      where: { email },
+    });
 
     if (isAlreadySignedUp) {
       const error = new CustomError("User already exists.");
@@ -55,18 +34,27 @@ export const createUserHandler = async (
       hashedPassword = result;
 
       const newUser = {
-        id: STATIC_USERS?.length + 1,
-        first_name: firstName,
-        last_name: lastName,
+        first_name,
+        last_name,
         email,
         password: hashedPassword,
+        created_at: new Date().toISOString(),
       };
 
-      STATIC_USERS.push(newUser);
+      const createdUser = await prisma.user.create({
+        data: newUser,
+      });
+
+      if (!createdUser) {
+        const error = new CustomError(
+          "Something went wrong. Could not create user. Try again later."
+        );
+        error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+        throw error;
+      }
 
       res.status(HTTP_STATUS_CODES.StatusCreated).json({
         message: "User was created successfully",
-        users: STATIC_USERS,
       });
     } else {
       const error = new CustomError(
@@ -90,7 +78,11 @@ export const loginHandler = async (
 
   try {
     // look up for the user email in db
-    const user = STATIC_USERS?.find((item) => item?.email === email);
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
     if (!user) {
       const error = new CustomError("Email or password is wrong!");
