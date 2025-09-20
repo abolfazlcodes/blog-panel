@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { router as authRouter } from "./src/routes/auth.js";
+import { router as blogRouter } from "./src/routes/blog.js";
 import { ICustomError } from "./src/types/index.js";
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use(authRouter);
+app.use(blogRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({

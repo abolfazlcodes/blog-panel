@@ -1,0 +1,54 @@
+import { NextFunction, Response, Request } from "express";
+
+import prisma from "../prisma.js";
+import CustomError from "../utils/customError.js";
+import HTTP_STATUS_CODES from "../utils/statusCodes.js";
+
+export const getAllBlogsHandler = () => {};
+
+export const createBlogHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { title, short_description, description, cover_image, content } =
+    req.body;
+
+  try {
+    // create blog content
+
+    const newBlog = {
+      title,
+      slug: "",
+      short_description,
+      description,
+      content,
+      cover_image,
+      views_count: 0,
+      likes_count: 0,
+      is_draft: true,
+      userId: 1, // default for now
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const result = await prisma.blog.create({
+      data: newBlog,
+    });
+    console.log(result);
+
+    if (!result) {
+      const error = new CustomError(
+        "Something went wrong. Could not create blog. Try again later."
+      );
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusCreated).json({
+      message: "Blog was created successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
