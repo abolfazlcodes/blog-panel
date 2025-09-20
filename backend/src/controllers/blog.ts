@@ -1,4 +1,5 @@
 import { NextFunction, Response, Request } from "express";
+import slugify from "slugify";
 
 import prisma from "../prisma.js";
 import CustomError from "../utils/customError.js";
@@ -15,11 +16,38 @@ export const createBlogHandler = async (
     req.body;
 
   try {
-    // create blog content
+    // create a slug
+    const slug = slugify.default(title, {
+      lower: true,
+    });
 
+    if (!slug) {
+      const error = new CustomError(
+        "Something went wrong. Could not create blog. Try again later."
+      );
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    // check if there is already a blog with the same slug
+    const isSlugAlreadyExists = await prisma.blog.findUnique({
+      where: {
+        slug,
+      },
+    });
+
+    if (isSlugAlreadyExists) {
+      const error = new CustomError(
+        "Blog with the same slug already exists. Please try a different title"
+      );
+      error.statusCode = HTTP_STATUS_CODES.StatusBadGateway;
+      throw error;
+    }
+
+    // create blog content
     const newBlog = {
       title,
-      slug: "",
+      slug,
       short_description,
       description,
       content,
