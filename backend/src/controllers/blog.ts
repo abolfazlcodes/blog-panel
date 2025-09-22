@@ -10,8 +10,15 @@ export const getAllBlogsHandler = async (
   res: Response,
   next: NextFunction
 ) => {
+  // @ts-ignore
+  const userId = req?.userId;
+
   try {
-    const allBlogs = await prisma.blog.findMany();
+    const allBlogs = await prisma.blog.findMany({
+      where: {
+        userId: userId,
+      },
+    });
 
     if (!allBlogs) {
       const error = new CustomError("Something went wrong. Try again later.");
@@ -33,6 +40,9 @@ export const createBlogHandler = async (
   res: Response,
   next: NextFunction
 ) => {
+  // @ts-ignore
+  const userId = req?.userId;
+
   const { title, short_description, description, cover_image, content } =
     req.body;
 
@@ -76,7 +86,7 @@ export const createBlogHandler = async (
       views_count: 0,
       likes_count: 0,
       is_draft: true,
-      userId: 1, // default for now
+      userId: userId, // the logged in userId
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -106,6 +116,8 @@ export const updateBlogHandler = async (
   res: Response,
   next: NextFunction
 ) => {
+  // @ts-ignore
+  const userId = req?.userId;
   const blogId = req.params.id;
   const { title, short_description, description, cover_image, content } =
     req.body;
@@ -115,6 +127,7 @@ export const updateBlogHandler = async (
     const blog = await prisma.blog.findUnique({
       where: {
         id: +blogId,
+        userId: userId,
       },
     });
 
@@ -136,6 +149,7 @@ export const updateBlogHandler = async (
     const updatedBlog = prisma.blog.update({
       where: {
         id: +blogId,
+        userId: userId,
       },
       data: updatedContent,
     });
@@ -160,6 +174,8 @@ export const deleteBlogHandler = async (
   res: Response,
   next: NextFunction
 ) => {
+  // @ts-ignore
+  const userId = req?.userId;
   const blogId = parseInt(req.params.id);
 
   try {
@@ -173,6 +189,7 @@ export const deleteBlogHandler = async (
     const blog = await prisma.blog.findUnique({
       where: {
         id: +blogId,
+        userId: userId,
       },
     });
 
@@ -183,9 +200,10 @@ export const deleteBlogHandler = async (
     }
 
     // delete the blog
-    const result = await prisma.blog.delete({
+    await prisma.blog.delete({
       where: {
         id: +blogId,
+        userId: userId,
       },
     });
 
