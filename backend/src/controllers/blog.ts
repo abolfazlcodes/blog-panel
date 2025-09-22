@@ -100,3 +100,46 @@ export const createBlogHandler = async (
     next(error);
   }
 };
+
+export const deleteBlogHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const blogId = parseInt(req.params.id);
+
+  try {
+    if (!blogId) {
+      const error = new CustomError("Invalid Id.");
+      error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
+      throw error;
+    }
+
+    // find the blog
+    const blog = await prisma.blog.findUnique({
+      where: {
+        id: +blogId,
+      },
+    });
+
+    if (!blog) {
+      const error = new CustomError("No blog was found.");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    // delete the blog
+    const result = await prisma.blog.delete({
+      where: {
+        id: +blogId,
+      },
+    });
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Blog was deleted successfully",
+      data: [],
+    });
+  } catch (error) {
+    next(error);
+  }
+};

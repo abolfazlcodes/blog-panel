@@ -2,7 +2,11 @@ import express from "express";
 import { body } from "express-validator";
 
 import { errorValidator } from "../middlewares/validator.js";
-import { createBlogHandler, getAllBlogsHandler } from "../controllers/blog.js";
+import {
+  createBlogHandler,
+  deleteBlogHandler,
+  getAllBlogsHandler,
+} from "../controllers/blog.js";
 
 const router = express.Router();
 
@@ -39,5 +43,9 @@ router.post(
   errorValidator,
   createBlogHandler
 );
+
+router.get("/blogs/:id", () => {});
+
+router.delete("/blogs/:id", deleteBlogHandler);
 
 export { router };
