@@ -101,6 +101,60 @@ export const createBlogHandler = async (
   }
 };
 
+export const updateBlogHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const blogId = req.params.id;
+  const { title, short_description, description, cover_image, content } =
+    req.body;
+
+  try {
+    // find the blog
+    const blog = await prisma.blog.findUnique({
+      where: {
+        id: +blogId,
+      },
+    });
+
+    if (!blog) {
+      const error = new CustomError("No blog was found");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const updatedContent = {
+      ...blog,
+      title,
+      short_description,
+      description,
+      content,
+      cover_image,
+    };
+
+    const updatedBlog = prisma.blog.update({
+      where: {
+        id: +blogId,
+      },
+      data: updatedContent,
+    });
+
+    if (!updatedBlog) {
+      const error = new CustomError("Could not update blog");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Blog was updated successfully",
+      data: [],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteBlogHandler = async (
   req: Request,
   res: Response,
