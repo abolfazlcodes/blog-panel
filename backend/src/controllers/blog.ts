@@ -40,7 +40,7 @@ export const createBlogHandler = async (
       const error = new CustomError(
         "Blog with the same slug already exists. Please try a different title"
       );
-      error.statusCode = HTTP_STATUS_CODES.StatusBadGateway;
+      error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
       throw error;
     }
 
@@ -63,7 +63,6 @@ export const createBlogHandler = async (
     const result = await prisma.blog.create({
       data: newBlog,
     });
-    console.log(result);
 
     if (!result) {
       const error = new CustomError(
