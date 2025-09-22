@@ -5,7 +5,28 @@ import prisma from "../prisma.js";
 import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 
-export const getAllBlogsHandler = () => {};
+export const getAllBlogsHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const allBlogs = await prisma.blog.findMany();
+
+    if (!allBlogs) {
+      const error = new CustomError("Something went wrong. Try again later.");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "successful",
+      data: allBlogs,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const createBlogHandler = async (
   req: Request,

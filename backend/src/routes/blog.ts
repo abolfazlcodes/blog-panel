@@ -6,10 +6,10 @@ import { createBlogHandler, getAllBlogsHandler } from "../controllers/blog.js";
 
 const router = express.Router();
 
-router.get("/blog", getAllBlogsHandler);
+router.get("/blogs", getAllBlogsHandler);
 
 router.post(
-  "/blog",
+  "/blogs",
   [
     body("title")
       .trim()
