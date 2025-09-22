@@ -8,10 +8,11 @@ import {
   getAllBlogsHandler,
   updateBlogHandler,
 } from "../controllers/blog.js";
+import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
 
 const router = express.Router();
 
-router.get("/blogs", getAllBlogsHandler);
+router.get("/blogs", isAuthenticatedValidator, getAllBlogsHandler);
 
 router.post(
   "/blogs",
@@ -41,6 +42,7 @@ router.post(
       })
       .withMessage("description should be at least 10 characters"),
   ],
+  isAuthenticatedValidator,
   errorValidator,
   createBlogHandler
 );
@@ -73,10 +75,11 @@ router.put(
       })
       .withMessage("description should be at least 10 characters"),
   ],
+  isAuthenticatedValidator,
   errorValidator,
   updateBlogHandler
 );
 
-router.delete("/blogs/:id", deleteBlogHandler);
+router.delete("/blogs/:id", isAuthenticatedValidator, deleteBlogHandler);
 
 export { router };
