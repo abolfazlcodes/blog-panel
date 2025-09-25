@@ -4,17 +4,30 @@ import dotenv from "dotenv";
 
 import { router as authRouter } from "./src/routes/auth.js";
 import { router as blogRouter } from "./src/routes/blog.js";
+import { router as mediaFileRouter } from "./src/routes/media-file.js";
 import { ICustomError } from "./src/types/index.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman)
+      if (!origin) return callback(null, true);
+      callback(null, origin); // allow the requesting origin
+    },
+    credentials: true, // allow cookies or Authorization headers
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 app.use(authRouter);
 app.use(blogRouter);
+app.use(mediaFileRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({
