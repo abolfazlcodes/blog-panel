@@ -6,6 +6,7 @@ const SingleBlogPage = () => {
       <h1>hello</h1>
       <blockquote>Nothing is impossible</blockquote>
     `);
+  console.log(content);
 
   return (
     <main className="min-h-svh">

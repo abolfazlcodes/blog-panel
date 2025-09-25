@@ -46,11 +46,12 @@ export const uploadFileHandler = async (
 
     // save new file
     fs.writeFileSync(filePath, req.file.buffer);
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
 
     // store in DB
     const newImage = await prisma.blogImage.create({
       data: {
-        url: `/uploads/${fileName}`,
+        url: fileUrl,
         hash,
         userId,
       },
