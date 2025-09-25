@@ -5,6 +5,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import prisma from "../prisma.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
+import CustomError from "../utils/customError.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +22,11 @@ export const uploadFileHandler = async (
     // @ts-ignore
     const userId = req?.userId;
 
-    if (!req.file)
-      return res
-        .status(HTTP_STATUS_CODES.StatusBadRequest)
-        .json({ error: "No file uploaded" });
+    if (!req.file) {
+      const error = new CustomError("No file uploaded");
+      error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
+      throw error;
+    }
 
     // hash to prevent duplicates
     const hash = crypto.createHash("md5").update(req.file.buffer).digest("hex");
@@ -37,9 +39,11 @@ export const uploadFileHandler = async (
 
     if (existing) {
       if (existing.userId !== userId) {
-        return res
-          .status(HTTP_STATUS_CODES.StatusNotAllowed)
-          .json({ error: "Forbidden: not your image" });
+        const error = new CustomError(
+          "Forbidden: You do not have access to this resource"
+        );
+        error.statusCode = HTTP_STATUS_CODES.StatusNotAllowed;
+        throw error;
       }
       return res.json({ url: existing.url });
     }
