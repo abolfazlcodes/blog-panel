@@ -8,6 +8,8 @@ import {
   createProjectHandler,
   deleteProjectHandler,
   getAllProjectsHandler,
+  getPublishedProjectHandler,
+  getPublishedSingleProjectHandler,
   getSingleProjectHandler,
   updateProjectHandler,
 } from "../controllers/projects.js";
@@ -15,7 +17,6 @@ import {
 const router = express.Router();
 
 router.get("/project", isAuthenticatedValidator, getAllProjectsHandler);
-
 router.get("/project/:id", isAuthenticatedValidator, getSingleProjectHandler);
 
 router.post(
@@ -85,5 +86,9 @@ router.put(
 );
 
 router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
+
+// public api routes:
+router.get("/public/:username/project", getPublishedProjectHandler);
+router.get("/public/:username/project/:id", getPublishedSingleProjectHandler);
 
 export { router };

@@ -269,3 +269,78 @@ export const deleteProjectHandler = async (
     next(error);
   }
 };
+
+// public api handlers
+export const getPublishedProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // const username = req.params.username;
+  try {
+    const allPublishedProjects = await prisma.project.findMany({
+      where: {
+        // user:
+        is_draft: false,
+      },
+    });
+
+    if (!allPublishedProjects) {
+      const error = new CustomError("Something went wrong. Try again later.");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "successful",
+      data: allPublishedProjects,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPublishedSingleProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // const username = req.params.username;
+  const projectId = parseInt(req.params.id);
+
+  try {
+    // check if the project with that id exists
+    const projectDoc = await prisma.project.findUnique({
+      where: {
+        id: +projectId,
+        is_draft: false,
+      },
+    });
+
+    if (!projectDoc) {
+      const error = new CustomError("No project is found.");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const formattedProject = {
+      id: projectDoc?.id,
+      slug: projectDoc?.slug,
+      title: projectDoc?.title,
+      short_description: projectDoc?.short_description,
+      description: projectDoc?.description,
+      cover_image: projectDoc?.cover_image,
+      content: projectDoc?.content,
+      updated_at: projectDoc?.updated_at,
+      published_at: projectDoc?.published_at,
+      is_draft: projectDoc?.is_draft,
+    };
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "successful",
+      data: formattedProject,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

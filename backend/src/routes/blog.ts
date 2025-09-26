@@ -8,6 +8,8 @@ import {
   createBlogHandler,
   deleteBlogHandler,
   getAllBlogsHandler,
+  getPublishedBlogsHandler,
+  getPublishedSingleBlogHandler,
   getSingleBlogHandler,
   updateBlogHandler,
   updateLikesCountHandler,
@@ -16,7 +18,6 @@ import {
 const router = express.Router();
 
 router.get("/blog", isAuthenticatedValidator, getAllBlogsHandler);
-
 router.get("/blog/:id", isAuthenticatedValidator, getSingleBlogHandler);
 
 router.post(
@@ -86,7 +87,10 @@ router.put(
 );
 
 router.patch("/blog/:id", isAuthenticatedValidator, updateLikesCountHandler);
-
 router.delete("/blog/:id", isAuthenticatedValidator, deleteBlogHandler);
+
+// public api routes:
+router.get("/public/:username/blog", getPublishedBlogsHandler);
+router.get("/public/:username/blog/:id", getPublishedSingleBlogHandler);
 
 export { router };
