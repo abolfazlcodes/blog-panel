@@ -17,6 +17,7 @@ model User {
   id         Int      @id @default(autoincrement())
   first_name String
   last_name  String
+  username   String   @unique
   email      String   @unique
   password   String
   created_at DateTime @default(now())
@@ -41,7 +42,7 @@ model Blog {
   is_draft          Boolean  @default(true)
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Project {
@@ -57,5 +58,5 @@ model Project {
   is_draft          Boolean  @default(true)
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 } 

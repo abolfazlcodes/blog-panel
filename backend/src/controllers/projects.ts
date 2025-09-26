@@ -223,6 +223,58 @@ export const updateProjectHandler = async (
   }
 };
 
+export const publishProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // @ts-ignore
+  const userId = req?.userId;
+  const projectId = parseInt(req.params.id);
+
+  try {
+    // find the project
+    const project = await prisma.project.findUnique({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+    });
+
+    if (!project) {
+      const error = new CustomError("No project was found");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const updatedContent = {
+      ...project,
+      is_draft: false,
+    };
+
+    const updatedProject = await prisma.project.update({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+      data: updatedContent,
+    });
+
+    if (!updatedProject) {
+      const error = new CustomError("Could not publish project document");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Project was published successfully",
+      data: [],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteProjectHandler = async (
   req: Request,
   res: Response,
@@ -270,18 +322,21 @@ export const deleteProjectHandler = async (
   }
 };
 
-// public api handlers
+// -------------------- public api handlers -------------------------
 export const getPublishedProjectHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // const username = req.params.username;
+  const username = req.params.username;
+
   try {
     const allPublishedProjects = await prisma.project.findMany({
       where: {
-        // user:
         is_draft: false,
+        user: {
+          username,
+        },
       },
     });
 
@@ -305,7 +360,8 @@ export const getPublishedSingleProjectHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  // const username = req.params.username;
+  const username = req.params.username;
+
   const projectId = parseInt(req.params.id);
 
   try {
@@ -314,6 +370,9 @@ export const getPublishedSingleProjectHandler = async (
       where: {
         id: +projectId,
         is_draft: false,
+        user: {
+          username,
+        },
       },
     });
 
