@@ -5,18 +5,22 @@ import { errorValidator } from "../middlewares/validator.js";
 import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
 
 import {
-  createBlogHandler,
-  deleteBlogHandler,
-  getAllBlogsHandler,
-  updateBlogHandler,
-} from "../controllers/blog.js";
+  createProjectHandler,
+  deleteProjectHandler,
+  getAllProjectsHandler,
+  getSingleProjectHandler,
+  updateProjectHandler,
+} from "../controllers/projects.js";
 
 const router = express.Router();
 
-router.get("/blogs", isAuthenticatedValidator, getAllBlogsHandler);
+router.get("/project", isAuthenticatedValidator, getAllProjectsHandler);
+
+router.get("/project/:id", isAuthenticatedValidator, getSingleProjectHandler);
 
 router.post(
-  "/blogs",
+  "/project",
+  isAuthenticatedValidator,
   [
     body("title")
       .trim()
@@ -43,13 +47,13 @@ router.post(
       })
       .withMessage("description should be at least 10 characters"),
   ],
-  isAuthenticatedValidator,
   errorValidator,
-  createBlogHandler
+  createProjectHandler
 );
 
 router.put(
-  "/blogs/:id",
+  "/project/:id",
+  isAuthenticatedValidator,
   [
     body("title")
       .trim()
@@ -76,11 +80,10 @@ router.put(
       })
       .withMessage("description should be at least 10 characters"),
   ],
-  isAuthenticatedValidator,
   errorValidator,
-  updateBlogHandler
+  updateProjectHandler
 );
 
-router.delete("/blogs/:id", isAuthenticatedValidator, deleteBlogHandler);
+router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
 
 export { router };
