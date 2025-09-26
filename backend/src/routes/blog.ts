@@ -11,6 +11,7 @@ import {
   getPublishedBlogsHandler,
   getPublishedSingleBlogHandler,
   getSingleBlogHandler,
+  publishBlogHandler,
   updateBlogHandler,
   updateLikesCountHandler,
 } from "../controllers/blog.js";
@@ -86,11 +87,12 @@ router.put(
   updateBlogHandler
 );
 
-router.patch("/blog/:id", isAuthenticatedValidator, updateLikesCountHandler);
+router.patch("/blog/:id", isAuthenticatedValidator, publishBlogHandler);
 router.delete("/blog/:id", isAuthenticatedValidator, deleteBlogHandler);
 
 // public api routes:
 router.get("/public/:username/blog", getPublishedBlogsHandler);
 router.get("/public/:username/blog/:id", getPublishedSingleBlogHandler);
+router.patch("/public/:username/blog/:id", updateLikesCountHandler);
 
 export { router };

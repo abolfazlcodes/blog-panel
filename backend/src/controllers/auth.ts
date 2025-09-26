@@ -29,6 +29,7 @@ export const createUserHandler = async (
     let hashedPassword;
 
     const result = await bcrypt.hash(password, 12);
+    const username = `${first_name?.toLowerCase()}_${last_name?.toLowerCase()}_`;
 
     if (result) {
       hashedPassword = result;
@@ -38,6 +39,7 @@ export const createUserHandler = async (
         last_name,
         email,
         password: hashedPassword,
+        username: username,
         created_at: new Date().toISOString(),
       };
 

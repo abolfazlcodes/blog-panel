@@ -11,6 +11,7 @@ import {
   getPublishedProjectHandler,
   getPublishedSingleProjectHandler,
   getSingleProjectHandler,
+  publishProjectHandler,
   updateProjectHandler,
 } from "../controllers/projects.js";
 
@@ -85,6 +86,7 @@ router.put(
   updateProjectHandler
 );
 
+router.patch("/blog/:id", isAuthenticatedValidator, publishProjectHandler);
 router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
 
 // public api routes:
