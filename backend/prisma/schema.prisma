@@ -22,6 +22,7 @@ model User {
   created_at DateTime @default(now())
 
   blogs Blog[]
+  projects Project[]
 }
 
 model Blog {
@@ -44,6 +45,22 @@ model Blog {
 
   images BlogImage[]
 }
+
+model Project {
+  id                Int      @id @default(autoincrement())
+  title             String
+  short_description String?
+  description       String
+  cover_image       String?
+  content           String
+  slug              String   @unique
+  published_at      DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  is_draft          Boolean  @default(true)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+} 
 
 model BlogImage {
   id     Int    @id @default(autoincrement())

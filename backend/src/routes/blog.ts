@@ -2,13 +2,14 @@ import express from "express";
 import { body } from "express-validator";
 
 import { errorValidator } from "../middlewares/validator.js";
+import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
+
 import {
   createBlogHandler,
   deleteBlogHandler,
   getAllBlogsHandler,
   updateBlogHandler,
 } from "../controllers/blog.js";
-import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
 
 const router = express.Router();
 
