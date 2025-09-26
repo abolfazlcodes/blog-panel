@@ -58,7 +58,6 @@ app.use(
 
     res.status(status).json({
       message,
-      error: error,
       data: data,
     });
   }

@@ -118,7 +118,7 @@ export const updateBlogHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
-  const blogId = req.params.id;
+  const blogId = parseInt(req.params.id);
   const { title, short_description, description, cover_image, content } =
     req.body;
 
@@ -146,7 +146,7 @@ export const updateBlogHandler = async (
       cover_image,
     };
 
-    const updatedBlog = prisma.blog.update({
+    const updatedBlog = await prisma.blog.update({
       where: {
         id: +blogId,
         userId: userId,

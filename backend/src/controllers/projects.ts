@@ -33,6 +33,7 @@ export const getAllProjectsHandler = async (
       short_description: item?.short_description,
       description: item?.description,
       slug: item?.slug,
+      cover_image: item?.cover_image,
       is_draft: item?.is_draft,
       updated_at: item?.updated_at,
       published_at: item?.published_at,
@@ -100,7 +101,6 @@ export const createProjectHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
-
   const { title, short_description, description, content, cover_image } =
     req.body;
 
@@ -159,6 +159,64 @@ export const createProjectHandler = async (
 
     res.status(HTTP_STATUS_CODES.StatusCreated).json({
       message: "Project was created successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // @ts-ignore
+  const userId = req?.userId;
+  const projectId = parseInt(req.params.id);
+  const { title, short_description, description, content, cover_image } =
+    req.body;
+
+  try {
+    // find the project
+    const projectDoc = await prisma.project.findUnique({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+    });
+
+    if (!projectDoc) {
+      const error = new CustomError("No project was found");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const updatedContent = {
+      ...projectDoc,
+      title,
+      short_description,
+      description,
+      content,
+      cover_image,
+    };
+
+    const updatedBlog = await prisma.project.update({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+      data: updatedContent,
+    });
+
+    if (!updatedBlog) {
+      const error = new CustomError("Could not update project");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Project was updated successfully",
+      data: [],
     });
   } catch (error) {
     next(error);
