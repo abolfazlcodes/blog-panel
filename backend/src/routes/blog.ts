@@ -8,15 +8,18 @@ import {
   createBlogHandler,
   deleteBlogHandler,
   getAllBlogsHandler,
+  getSingleBlogHandler,
   updateBlogHandler,
 } from "../controllers/blog.js";
 
 const router = express.Router();
 
-router.get("/blogs", isAuthenticatedValidator, getAllBlogsHandler);
+router.get("/blog", isAuthenticatedValidator, getAllBlogsHandler);
+
+router.get("/blog/:id", isAuthenticatedValidator, getSingleBlogHandler);
 
 router.post(
-  "/blogs",
+  "/blog",
   [
     body("title")
       .trim()
@@ -49,7 +52,7 @@ router.post(
 );
 
 router.put(
-  "/blogs/:id",
+  "/blog/:id",
   [
     body("title")
       .trim()
@@ -81,6 +84,6 @@ router.put(
   updateBlogHandler
 );
 
-router.delete("/blogs/:id", isAuthenticatedValidator, deleteBlogHandler);
+router.delete("/blog/:id", isAuthenticatedValidator, deleteBlogHandler);
 
 export { router };

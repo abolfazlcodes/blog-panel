@@ -35,6 +35,54 @@ export const getAllBlogsHandler = async (
   }
 };
 
+export const getSingleBlogHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // @ts-ignore
+  const userId = req?.userId;
+  const blogId = parseInt(req.params.id);
+
+  try {
+    // check if the blog with that id exists
+    const blogDoc = await prisma.blog.findUnique({
+      where: {
+        id: +blogId,
+        userId: userId,
+      },
+    });
+
+    if (!blogDoc) {
+      const error = new CustomError("No blog is found.");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const formattedBlog = {
+      id: blogDoc?.id,
+      slug: blogDoc?.slug,
+      title: blogDoc?.title,
+      short_description: blogDoc?.short_description,
+      description: blogDoc?.description,
+      cover_image: blogDoc?.cover_image,
+      content: blogDoc?.content,
+      updated_at: blogDoc?.updated_at,
+      published_at: blogDoc?.published_at,
+      is_draft: blogDoc?.is_draft,
+      views_count: blogDoc?.views_count,
+      likes_count: blogDoc?.likes_count,
+    };
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "successful",
+      data: formattedBlog,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createBlogHandler = async (
   req: Request,
   res: Response,
