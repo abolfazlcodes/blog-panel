@@ -5,6 +5,7 @@ const HTTP_STATUS_CODES = {
   StatusNotAllowed: 403,
   StatusNotFound: 404,
   StatusMethodNotAllowed: 405,
+  StatusUnprocessableEntity: 422,
   StatusOk: 200,
   StatusCreated: 201,
   StatusAccepted: 202,

@@ -10,12 +10,24 @@ export const errorValidator = (
   const errors: Result = validationResult(req);
 
   if (!errors?.isEmpty()) {
-    return res.status(HTTP_STATUS_CODES.StatusBadRequest).json({
+    const errorsArrayData = errors?.array();
+    const errorsMap = new Map();
+
+    errorsArrayData?.map((item) => {
+      const errorExists = errorsMap?.get(item?.path);
+
+      if (errorExists) {
+        errorExists.push(item?.msg);
+      } else {
+        errorsMap.set(item?.path, [item?.msg]);
+      }
+    });
+
+    return res.status(HTTP_STATUS_CODES.StatusUnprocessableEntity).json({
       message: "Wrong Data Format",
-      errors: errors?.array()?.map((errItem) => ({
-        field: errItem?.path,
-        message: errItem?.msg,
-      })),
+      description: "One or some part of the request are unprocessable",
+      status: HTTP_STATUS_CODES.StatusUnprocessableEntity,
+      errors: Object.fromEntries(errorsMap),
     });
   }
 
