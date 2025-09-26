@@ -10,6 +10,7 @@ import {
   getAllBlogsHandler,
   getSingleBlogHandler,
   updateBlogHandler,
+  updateLikesCountHandler,
 } from "../controllers/blog.js";
 
 const router = express.Router();
@@ -83,6 +84,8 @@ router.put(
   errorValidator,
   updateBlogHandler
 );
+
+router.patch("/blog/:id", isAuthenticatedValidator, updateLikesCountHandler);
 
 router.delete("/blog/:id", isAuthenticatedValidator, deleteBlogHandler);
 

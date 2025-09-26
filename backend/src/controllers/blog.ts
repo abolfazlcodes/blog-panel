@@ -227,6 +227,59 @@ export const updateBlogHandler = async (
   }
 };
 
+export const updateLikesCountHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // @ts-ignore
+  const userId = req?.userId;
+  const blogId = parseInt(req.params.id);
+  const { likes_count } = req.body;
+
+  try {
+    // find the blog
+    const blog = await prisma.blog.findUnique({
+      where: {
+        id: +blogId,
+        userId: userId,
+      },
+    });
+
+    if (!blog) {
+      const error = new CustomError("No blog was found");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    const updatedContent = {
+      ...blog,
+      likes_count: +blog?.likes_count + likes_count,
+    };
+
+    const updatedBlog = await prisma.blog.update({
+      where: {
+        id: +blogId,
+        userId: userId,
+      },
+      data: updatedContent,
+    });
+
+    if (!updatedBlog) {
+      const error = new CustomError("Could not update blog");
+      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+      throw error;
+    }
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Blog was updated successfully",
+      data: [],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteBlogHandler = async (
   req: Request,
   res: Response,
