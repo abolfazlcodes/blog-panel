@@ -7,11 +7,14 @@ import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
 import {
   createProjectHandler,
   getAllProjectsHandler,
+  getSingleProjectHandler,
 } from "../controllers/projects.js";
 
 const router = express.Router();
 
 router.get("/project", isAuthenticatedValidator, getAllProjectsHandler);
+
+router.get("/project/:id", isAuthenticatedValidator, getSingleProjectHandler);
 
 router.post(
   "/project",

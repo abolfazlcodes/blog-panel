@@ -27,9 +27,74 @@ export const getAllProjectsHandler = async (
       throw error;
     }
 
+    const formattedProjects = allProjects?.map((item) => ({
+      id: item?.id,
+      title: item?.title,
+      short_description: item?.short_description,
+      description: item?.description,
+      slug: item?.slug,
+      is_draft: item?.is_draft,
+      updated_at: item?.updated_at,
+      published_at: item?.published_at,
+    }));
+
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
-      data: allProjects,
+      data: formattedProjects,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSingleProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const projectId = req?.params?.id;
+  // @ts-ignore
+  const userId = req?.userId;
+
+  try {
+    // check if the project with that id exists
+    const projectDoc = await prisma.project.findUnique({
+      where: {
+        id: +projectId,
+      },
+    });
+
+    if (!projectDoc) {
+      const error = new CustomError("No project is found.");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    // check if user id is the same
+    if (+userId !== +projectDoc?.userId) {
+      const error = new CustomError(
+        "Unauthorized. You do not have access to this content."
+      );
+      error.statusCode = HTTP_STATUS_CODES.StatusNotAllowed;
+      throw error;
+    }
+
+    const formattedProject = {
+      id: projectDoc?.id,
+      slug: projectDoc?.slug,
+      title: projectDoc?.title,
+      short_description: projectDoc?.short_description,
+      description: projectDoc?.description,
+      cover_image: projectDoc?.cover_image,
+      content: projectDoc?.content,
+      updated_at: projectDoc?.updated_at,
+      published_at: projectDoc?.published_at,
+      is_draft: projectDoc?.is_draft,
+    };
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "successful",
+      data: formattedProject,
     });
   } catch (error) {
     next(error);
