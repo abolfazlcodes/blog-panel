@@ -59,19 +59,29 @@ export const getSingleBlogHandler = async (
       throw error;
     }
 
+    // update views_count whenever the id of this blog is hit
+    const updatedBlog = await prisma.blog.update({
+      where: {
+        id: +blogId,
+      },
+      data: {
+        views_count: blogDoc?.views_count + 1,
+      },
+    });
+
     const formattedBlog = {
-      id: blogDoc?.id,
-      slug: blogDoc?.slug,
-      title: blogDoc?.title,
-      short_description: blogDoc?.short_description,
-      description: blogDoc?.description,
-      cover_image: blogDoc?.cover_image,
-      content: blogDoc?.content,
-      updated_at: blogDoc?.updated_at,
-      published_at: blogDoc?.published_at,
-      is_draft: blogDoc?.is_draft,
-      views_count: blogDoc?.views_count,
-      likes_count: blogDoc?.likes_count,
+      id: updatedBlog?.id,
+      slug: updatedBlog?.slug,
+      title: updatedBlog?.title,
+      short_description: updatedBlog?.short_description,
+      description: updatedBlog?.description,
+      cover_image: updatedBlog?.cover_image,
+      content: updatedBlog?.content,
+      updated_at: updatedBlog?.updated_at,
+      published_at: updatedBlog?.published_at,
+      is_draft: updatedBlog?.is_draft,
+      views_count: updatedBlog?.views_count,
+      likes_count: updatedBlog?.likes_count,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
