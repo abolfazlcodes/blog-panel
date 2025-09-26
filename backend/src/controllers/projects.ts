@@ -52,7 +52,7 @@ export const getSingleProjectHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const projectId = req?.params?.id;
+  const projectId = parseInt(req.params.id);
   // @ts-ignore
   const userId = req?.userId;
 
@@ -61,21 +61,13 @@ export const getSingleProjectHandler = async (
     const projectDoc = await prisma.project.findUnique({
       where: {
         id: +projectId,
+        userId: userId,
       },
     });
 
     if (!projectDoc) {
       const error = new CustomError("No project is found.");
       error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
-      throw error;
-    }
-
-    // check if user id is the same
-    if (+userId !== +projectDoc?.userId) {
-      const error = new CustomError(
-        "Unauthorized. You do not have access to this content."
-      );
-      error.statusCode = HTTP_STATUS_CODES.StatusNotAllowed;
       throw error;
     }
 
@@ -167,6 +159,53 @@ export const createProjectHandler = async (
 
     res.status(HTTP_STATUS_CODES.StatusCreated).json({
       message: "Project was created successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProjectHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const projectId = parseInt(req.params.id);
+  // @ts-ignore
+  const userId = req?.userId;
+
+  try {
+    if (!projectId) {
+      const error = new CustomError("Invalid Id.");
+      error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
+      throw error;
+    }
+
+    // find the project doc
+    const projectDoc = await prisma.project.findUnique({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+    });
+
+    if (!projectDoc) {
+      const error = new CustomError("No project document was found.");
+      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      throw error;
+    }
+
+    // delete the project
+    await prisma.project.delete({
+      where: {
+        id: +projectId,
+        userId: userId,
+      },
+    });
+
+    res.status(HTTP_STATUS_CODES.StatusOk).json({
+      message: "Document was deleted successfully",
+      data: [],
     });
   } catch (error) {
     next(error);

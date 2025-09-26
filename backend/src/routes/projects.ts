@@ -6,6 +6,7 @@ import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
 
 import {
   createProjectHandler,
+  deleteProjectHandler,
   getAllProjectsHandler,
   getSingleProjectHandler,
 } from "../controllers/projects.js";
@@ -48,5 +49,7 @@ router.post(
   errorValidator,
   createProjectHandler
 );
+
+router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
 
 export { router };
