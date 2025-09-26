@@ -42,8 +42,6 @@ model Blog {
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
-
-  images BlogImage[]
 }
 
 model Project {
@@ -61,16 +59,3 @@ model Project {
   userId Int
   user   User @relation(fields: [userId], references: [id])
 } 
-
-model BlogImage {
-  id     Int    @id @default(autoincrement())
-  url    String
-  hash   String @unique
-  blogId Int?
-  blog   Blog?  @relation(fields: [blogId], references: [id], onDelete: Cascade)
-
-  userId Int
-  // user      User     @relation(fields: [userId], references: [id])
-
-  uploadedAt DateTime @default(now())
-}
