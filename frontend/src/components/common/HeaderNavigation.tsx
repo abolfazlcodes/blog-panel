@@ -1,9 +1,10 @@
 // import { ArrowDown } from "lucide-react";
 import { NavLink } from "react-router";
+import { Button } from "./Button";
 
 const HeaderNavigation = () => {
   return (
-    <header className="flex px-4 max-w-[1280px] w-full mx-auto border items-center justify-between">
+    <header className="flex px-4 py-2 max-w-[1280px] w-full mx-auto shadow-bg-field items-center justify-between">
       <NavLink
         to={"/"}
         className={"block w-14 rounded-full overflow-hidden h-14 relative"}
@@ -22,7 +23,9 @@ const HeaderNavigation = () => {
               "hover:text-green-600 transition-all duration-500 ease-in-out"
             }
           >
-            <li>write</li>
+            <Button colorType="success" variant="soft">
+              <li>write</li>
+            </Button>
           </NavLink>
           <NavLink
             to={"/blogs"}
@@ -30,7 +33,9 @@ const HeaderNavigation = () => {
               "hover:text-green-600 transition-all duration-500 ease-in-out"
             }
           >
-            <li>recent posts</li>
+            <Button colorType="success" variant="soft">
+              <li>recent posts</li>
+            </Button>
           </NavLink>
         </ul>
 
@@ -40,9 +45,12 @@ const HeaderNavigation = () => {
             <ArrowDown className="w-4 h-4" />
           </div> */}
           <NavLink to={"/login"}>
-            <button className="bg-green-500 cursor-pointer w-24 px-3 py-1 rounded-sm text-white font-bold">
+            <Button
+              colorType="success"
+              className="bg-green-500 cursor-pointer w-24 px-3 py-1 rounded-sm text-white font-bold"
+            >
               Login
-            </button>
+            </Button>
           </NavLink>
         </div>
       </div>

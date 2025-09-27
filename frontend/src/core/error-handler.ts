@@ -25,28 +25,28 @@ export class ApiError extends Error {
 export const errorHandler = (error: AxiosError<ErrorResponseData>): never => {
   const statusCode = error.response?.status;
   const responseMessage =
-    error.response?.data?.message || "خطای ناشناخته رخ داده است";
+    error.response?.data?.message || "Unknown error occurred";
 
-  let customMessage = "یک خطای غیرمنتظره رخ داد.";
+  let customMessage = "Unknown error occurred";
 
   switch (statusCode) {
     case 400:
-      customMessage = "درخواست نامعتبر است. لطفاً ورودی‌های خود را بررسی کنید.";
+      customMessage = "Wrong input formats. Please provide valid data";
       break;
     case 401:
-      customMessage = "شما احراز هویت نشده‌اید. لطفاً وارد شوید.";
+      customMessage = "Not authorized. Please login";
       break;
     case 403:
-      customMessage = "دسترسی غیرمجاز. شما به این منبع دسترسی ندارید.";
+      customMessage = "Access denied. You are not allowed to be here";
       break;
     case 404:
-      customMessage = "منبع مورد نظر یافت نشد.";
+      customMessage = "Not found. The resource is missing";
       break;
     case 500:
-      customMessage = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید.";
+      customMessage = "Internal server error. Please try again later";
       break;
     case 503:
-      customMessage = "سرویس در دسترس نیست. لطفاً بعداً دوباره تلاش کنید.";
+      customMessage = "Server Gate away. Please try again later";
       break;
     default:
       customMessage = responseMessage;

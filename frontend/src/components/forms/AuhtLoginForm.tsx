@@ -18,17 +18,10 @@ const AuthLoginForm = () => {
     },
   });
 
-  const loginMutationHandler = useLoginHandler();
+  const { isLoggingIn, loginHandler } = useLoginHandler();
 
   const loginSubmitHandler = (values: TLoginForm) => {
-    loginMutationHandler.mutate(values, {
-      onSuccess: (response) => {
-        console.log(response);
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    });
+    loginHandler(values);
   };
 
   return (
@@ -65,6 +58,8 @@ const AuthLoginForm = () => {
           className="w-full"
           type="submit"
           form="login-form"
+          disabled={isLoggingIn}
+          isLoading={isLoggingIn}
         >
           Login
         </Button>
