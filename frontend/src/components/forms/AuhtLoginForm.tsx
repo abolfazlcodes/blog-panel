@@ -7,6 +7,7 @@ import {
 } from "@/types/forms/auth.validations";
 import TextFieldController from "../common/text-field/TextFieldController";
 import { Button } from "../common/Button";
+import { useLoginHandler } from "@/services/authentication/useLogin";
 
 const AuthLoginForm = () => {
   const { handleSubmit, control } = useForm<TLoginForm>({
@@ -17,8 +18,17 @@ const AuthLoginForm = () => {
     },
   });
 
+  const loginMutationHandler = useLoginHandler();
+
   const loginSubmitHandler = (values: TLoginForm) => {
-    console.log(values);
+    loginMutationHandler.mutate(values, {
+      onSuccess: (response) => {
+        console.log(response);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
   };
 
   return (
