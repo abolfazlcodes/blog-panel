@@ -88,7 +88,7 @@ export const loginHandler = async (
 
     if (!user) {
       const error = new CustomError("Email or password is wrong!");
-      error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
+      error.statusCode = HTTP_STATUS_CODES.StatusUnprocessableEntity;
       throw error;
     }
 
@@ -117,7 +117,7 @@ export const loginHandler = async (
       });
     } else {
       const error = new CustomError("Email or password is wrong!");
-      error.statusCode = HTTP_STATUS_CODES.StatusUnauthorized;
+      error.statusCode = HTTP_STATUS_CODES.StatusUnprocessableEntity;
       throw error;
     }
   } catch (error) {

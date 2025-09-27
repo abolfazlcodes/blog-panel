@@ -7,6 +7,7 @@ import {
 } from "@/types/forms/auth.validations";
 import TextFieldController from "../common/text-field/TextFieldController";
 import { Button } from "../common/Button";
+import { useLoginHandler } from "@/services/authentication/useLogin";
 
 const AuthLoginForm = () => {
   const { handleSubmit, control } = useForm<TLoginForm>({
@@ -17,8 +18,10 @@ const AuthLoginForm = () => {
     },
   });
 
+  const { isLoggingIn, loginHandler } = useLoginHandler();
+
   const loginSubmitHandler = (values: TLoginForm) => {
-    console.log(values);
+    loginHandler(values);
   };
 
   return (
@@ -55,6 +58,8 @@ const AuthLoginForm = () => {
           className="w-full"
           type="submit"
           form="login-form"
+          disabled={isLoggingIn}
+          isLoading={isLoggingIn}
         >
           Login
         </Button>
