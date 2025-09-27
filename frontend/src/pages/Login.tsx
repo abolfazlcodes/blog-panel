@@ -1,6 +1,4 @@
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import InputLabel from "@/components/InputLabel";
+import AuthLoginForm from "@/components/forms/AuhtLoginForm";
 
 const LoginPage = () => {
   return (
@@ -19,21 +17,7 @@ const LoginPage = () => {
           </h1>
         </header>
 
-        <form className="flex flex-col gap-y-4 px-4">
-          <div className="flex flex-col gap-y-2">
-            <InputLabel>Email: </InputLabel>
-            <Input type="email" placeholder="johndoe@gmail.com" />
-          </div>
-
-          <div className="flex flex-col gap-y-2">
-            <InputLabel>Password: </InputLabel>
-            <Input type="password" placeholder="password here" />
-          </div>
-
-          <div className="w-full mt-10">
-            <Button type="submit">Login</Button>
-          </div>
-        </form>
+        <AuthLoginForm />
       </article>
     </main>
   );

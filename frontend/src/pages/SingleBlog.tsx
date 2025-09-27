@@ -1,4 +1,4 @@
-import BlogTextEditor from "@/components/BlogTextEditor";
+import BlogTextEditor from "@/components/common/BlogTextEditor";
 import { useState } from "react";
 
 const SingleBlogPage = () => {
