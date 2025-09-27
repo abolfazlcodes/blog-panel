@@ -1,0 +1,14 @@
+@theme {
+  --shadow-z1: 0px 1px 2px 0px #919eab29;
+  --shadow-z4: 0px 4px 8px 0px #919eab29;
+  --shadow-z8: 0px 8px 16px 0px #919eab29;
+  --shadow-z12: 0px 12px 24px -4px #919eab29;
+  --shadow-z16: 0px 16px 32px -4px #919eab29;
+  --shadow-z20: 0px 20px 40px -4px #919eab29;
+  --shadow-z24: 0px 24px 48px 0px #919eab29;
+  --shadow-input-focused: 0px 0px 0px 2px rgba(0, 55, 104, 0.15);
+  --shadow-input-focused-error:
+    0px 0px 0px 0px rgba(254, 228, 226, 0.7), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-card: 0px 12px 24px -4px #919eab1f, 0px 0px 2px 0px #919eab33;
+  --shadow-drop-down: -20px 20px 40px -4px #919eab3d, 0px 0px 2px 0px #919eab3d;
+}

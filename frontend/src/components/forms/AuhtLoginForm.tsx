@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import Button from "../common/Button";
 import {
   loginFormSchema,
   type TLoginForm,
 } from "@/types/forms/auth.validations";
 import TextFieldController from "../common/text-field/TextFieldController";
+import { Button } from "../common/Button";
 
 const AuthLoginForm = () => {
   const { handleSubmit, control } = useForm<TLoginForm>({
@@ -50,7 +50,12 @@ const AuthLoginForm = () => {
       </div>
 
       <div className="w-full mt-10">
-        <Button type="submit" form="login-form">
+        <Button
+          colorType="success"
+          className="w-full"
+          type="submit"
+          form="login-form"
+        >
           Login
         </Button>
       </div>

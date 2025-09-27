@@ -1,0 +1,49 @@
+@theme {
+  --animate-scale-in: scale-in 0.3s ease-in-out forwards;
+  @keyframes scale-in {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  --animate-scale-out: scale-out 0.3s ease-in-out forwards;
+  @keyframes scale-out {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
+
+  --animate-fade-in: fade-in 0.4s ease-out forwards;
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      backdrop-filter: blur(6px);
+    }
+    100% {
+      opacity: 1;
+      backdrop-filter: blur(6px);
+    }
+  }
+
+  --animate-fade-out: fade-out 0.4s ease-out forwards;
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+      backdrop-filter: blur(0px);
+    }
+    100% {
+      opacity: 0;
+      backdrop-filter: blur(0px);
+    }
+  }
+}
