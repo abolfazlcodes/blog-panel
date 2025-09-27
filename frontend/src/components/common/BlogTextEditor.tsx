@@ -1,5 +1,5 @@
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
-import { Toolbar } from "./tiptap-ui-primitive/toolbar";
+import { Toolbar } from "../tiptap-ui-primitive/toolbar";
 import { useEffect, useRef, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useWindowSize } from "@/hooks/use-window-size";
@@ -15,7 +15,7 @@ import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
 import Superscript from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
-import { ImageUploadNode } from "./tiptap-node/image-upload-node";
+import { ImageUploadNode } from "../tiptap-node/image-upload-node";
 import { handleImageUpload } from "@/lib/tiptap-utils";
 
 import "@/components/tiptap-node/blockquote-node/blockquote-node.scss";

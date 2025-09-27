@@ -1,10 +1,10 @@
-import { ArrowLeftIcon } from "./tiptap-icons/arrow-left-icon";
-import { HighlighterIcon } from "./tiptap-icons/highlighter-icon";
-import { LinkIcon } from "./tiptap-icons/link-icon";
-import { Button } from "./tiptap-ui-primitive/button";
-import { ToolbarGroup, ToolbarSeparator } from "./tiptap-ui-primitive/toolbar";
-import { ColorHighlightPopoverContent } from "./tiptap-ui/color-highlight-popover";
-import { LinkContent } from "./tiptap-ui/link-popover";
+import { ArrowLeftIcon } from "../tiptap-icons/arrow-left-icon";
+import { HighlighterIcon } from "../tiptap-icons/highlighter-icon";
+import { LinkIcon } from "../tiptap-icons/link-icon";
+import { Button } from "../tiptap-ui-primitive/button";
+import { ToolbarGroup, ToolbarSeparator } from "../tiptap-ui-primitive/toolbar";
+import { ColorHighlightPopoverContent } from "../tiptap-ui/color-highlight-popover";
+import { LinkContent } from "../tiptap-ui/link-popover";
 
 const MobileToolbarContent = ({
   type,

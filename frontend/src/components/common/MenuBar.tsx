@@ -14,7 +14,7 @@ import {
   QuoteIcon,
 } from "lucide-react";
 import { Editor } from "@tiptap/react";
-import { Toggle } from "./ui/toggle";
+import { Toggle } from "../ui/toggle";
 
 interface IMenuBarProps {
   editor: Editor | null;

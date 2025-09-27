@@ -1,0 +1,129 @@
+.btn {
+  @apply inline-flex min-h-[48px] min-w-[76px] cursor-pointer items-center justify-center gap-x-1.5 rounded-lg font-medium transition-all duration-200 focus:outline-none;
+  &-lg {
+    @apply text-d-subtitle1 h-12 min-w-[108px] px-4;
+  }
+  &-md {
+    @apply text-d-subtitle2 h-9 px-3;
+  }
+  &-sm {
+    @apply text-m-subtitle2 !h-[30px] min-w-16 px-2;
+  }
+
+  &-normal {
+    @apply rounded-lg;
+  }
+  &-full {
+    @apply w-full;
+  }
+
+  &-contained {
+    @apply text-white;
+
+    &-global {
+      @apply hover:shadow-z4 bg-gray-800 hover:bg-gray-900 dark:bg-white dark:!text-black dark:hover:bg-gray-300;
+    }
+
+    &-primary {
+      @apply bg-primary hover:bg-primary-dark hover:shadow-primary;
+    }
+    &-secondary {
+      @apply bg-secondary hover:bg-secondary-dark hover:shadow-secondary;
+    }
+    &-info {
+      @apply bg-secondary-text hover:bg-secondary-text hover:shadow-secondary-text;
+    }
+    &-success {
+      @apply bg-success hover:bg-success-dark hover:shadow-success;
+    }
+    &-warning {
+      @apply bg-warning hover:bg-warning-dark hover:shadow-warning;
+    }
+    &-error {
+      @apply bg-error hover:bg-error-dark hover:shadow-error;
+    }
+    &:disabled {
+      @apply bg-disabled/20 text-disabled/80 hover:shadow-disabled cursor-not-allowed;
+    }
+  }
+
+  &-outlined {
+    @apply border bg-transparent;
+    &-global {
+      @apply border-disabled/48 hover:border-disabled hover:shadow-z4 text-gray-500 hover:text-gray-700;
+    }
+    &-primary {
+      @apply border-primary text-primary hover:bg-primary/8;
+    }
+    &-secondary {
+      @apply border-secondary text-secondary hover:bg-secondary/8;
+    }
+    &-info {
+      @apply border-secondary-text text-secondary-text hover:bg-secondary-text/8;
+    }
+    &-success {
+      @apply border-success text-success hover:bg-success/8;
+    }
+    &-warning {
+      @apply border-warning text-warning hover:bg-warning/8;
+    }
+    &-error {
+      @apply border-error text-error hover:bg-error/8;
+    }
+    &:disabled {
+      @apply border-disabled/50 text-disabled/80 cursor-not-allowed bg-white;
+    }
+  }
+
+  &-text {
+    @apply bg-transparent;
+
+    &-primary {
+      @apply text-primary hover:bg-primary/8;
+    }
+    &-secondary {
+      @apply text-secondary hover:bg-secondary/8;
+    }
+    &-info {
+      @apply text-secondary-text hover:bg-secondary-text/8;
+    }
+    &-success {
+      @apply text-success hover:bg-success/8;
+    }
+    &-warning {
+      @apply text-warning hover:bg-warning/8;
+    }
+    &-error {
+      @apply text-error hover:bg-error/8;
+    }
+    &:disabled {
+      @apply text-disabled/80 cursor-not-allowed;
+    }
+  }
+
+  &-soft {
+    @apply bg-transparent;
+
+    &-primary {
+      @apply bg-primary/8 text-primary hover:bg-primary/16;
+    }
+    &-secondary {
+      @apply bg-secondary/8 text-secondary hover:bg-secondary/16;
+    }
+    &-info {
+      @apply bg-secondary-text/8 text-secondary-text hover:bg-secondary-text/16;
+    }
+    &-success {
+      @apply bg-success/8 text-success hover:bg-success/16;
+    }
+    &-warning {
+      @apply bg-warning/8 text-warning hover:bg-warning/16;
+    }
+    &-error {
+      @apply bg-error/8 text-error hover:bg-error/16;
+    }
+    &:disabled {
+      @apply bg-disabled/20 text-disabled/80 cursor-not-allowed;
+    }
+  }
+}

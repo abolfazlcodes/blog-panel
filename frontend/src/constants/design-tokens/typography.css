@@ -1,0 +1,79 @@
+@theme {
+  --text-*: initial;
+
+  --text-d-h1: 3rem;
+  --text-d-h1--line-height: 5rem;
+
+  --text-d-h2: 2rem;
+  --text-d-h2--line-height: 4rem;
+
+  --text-d-h3: 1.75rem;
+  --text-d-h3--line-height: 3rem;
+
+  --text-d-h4: 1.5rem;
+  --text-d-h4--line-height: 2.25rem;
+
+  --text-d-h5: 1.25rem;
+  --text-d-h5--line-height: 1.875rem;
+
+  --text-d-h6: 1.125rem;
+  --text-d-h6--line-height: 1.75rem;
+
+  --text-m-h1: 2rem;
+  --text-m-h1--line-height: 5rem;
+
+  --text-m-h2: 1.75rem;
+  --text-m-h2--line-height: 4rem;
+
+  --text-m-h3: 1.5rem;
+  --text-m-h3--line-height: 3rem;
+
+  --text-m-h4: 1.25rem;
+  --text-m-h4--line-height: 2.25rem;
+
+  --text-m-h5: 1.125rem;
+  --text-m-h5--line-height: 1.875rem;
+
+  --text-m-h6: 1rem;
+  --text-m-h6--line-height: 1.75rem;
+
+  --text-d-subtitle1: 1rem;
+  --text-d-subtitle1--line-height: 1.5rem;
+
+  --text-d-subtitle2: 0.875rem;
+  --text-d-subtitle2--line-height: 1.375rem;
+
+  --text-m-subtitle1: 0.875rem;
+  --text-m-subtitle1--line-height: 1.5rem;
+
+  --text-m-subtitle2: 0.75rem;
+  --text-m-subtitle2--line-height: 1.375rem;
+
+  --text-d-body1: 1rem;
+  --text-d-body1--line-height: 1.5rem;
+
+  --text-d-body2: 0.875rem;
+  --text-d-body2--line-height: 1.375rem;
+
+  --text-m-body1: 0.875rem;
+  --text-m-body1--line-height: 1.5rem;
+
+  --text-m-body2: 0.75rem;
+  --text-m-body2--line-height: 1.375rem;
+
+  --text-d-caption: 0.75rem;
+  --text-d-caption--line-height: 1.125rem;
+
+  --text-m-caption: 0.625rem;
+  --text-m-caption--line-height: 1.125rem;
+
+  --text-d-overline: 0.75rem;
+  --text-d-overline--line-height: 1.125rem;
+
+  --text-m-overline: 0.625rem;
+  --text-m-overline--line-height: 1.125rem;
+
+  /*--font-iransansx: iransans-x;*/
+  /*--font-iransansx--font-feature-settings: "cv02", "cv03", "cv04", "cv11";*/
+  /*--font-iransansx--font-variation-settings: "opsz" 32;*/
+}

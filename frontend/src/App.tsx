@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router";
 import { lazy } from "react";
-import PageLayout from "./components/PageLayout";
+import PageLayout from "./components/common/PageLayout";
 import SingleBlogPage from "./pages/SingleBlog";
 
 const LoginPage = lazy(() => import("./pages/Login"));

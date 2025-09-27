@@ -1,19 +1,19 @@
 // import { ThemeToggle } from "./tiptap-templates/simple/theme-toggle";
-import { Spacer } from "./tiptap-ui-primitive/spacer";
-import { ToolbarGroup, ToolbarSeparator } from "./tiptap-ui-primitive/toolbar";
-import { BlockquoteButton } from "./tiptap-ui/blockquote-button";
-import { CodeBlockButton } from "./tiptap-ui/code-block-button";
+import { Spacer } from "../tiptap-ui-primitive/spacer";
+import { ToolbarGroup, ToolbarSeparator } from "../tiptap-ui-primitive/toolbar";
+import { BlockquoteButton } from "../tiptap-ui/blockquote-button";
+import { CodeBlockButton } from "../tiptap-ui/code-block-button";
 import {
   ColorHighlightPopover,
   ColorHighlightPopoverButton,
-} from "./tiptap-ui/color-highlight-popover";
-import { HeadingDropdownMenu } from "./tiptap-ui/heading-dropdown-menu";
-import { ImageUploadButton } from "./tiptap-ui/image-upload-button";
-import { LinkButton, LinkPopover } from "./tiptap-ui/link-popover";
-import { ListDropdownMenu } from "./tiptap-ui/list-dropdown-menu";
-import { MarkButton } from "./tiptap-ui/mark-button";
-import { TextAlignButton } from "./tiptap-ui/text-align-button";
-import { UndoRedoButton } from "./tiptap-ui/undo-redo-button";
+} from "../tiptap-ui/color-highlight-popover";
+import { HeadingDropdownMenu } from "../tiptap-ui/heading-dropdown-menu";
+import { ImageUploadButton } from "../tiptap-ui/image-upload-button";
+import { LinkButton, LinkPopover } from "../tiptap-ui/link-popover";
+import { ListDropdownMenu } from "../tiptap-ui/list-dropdown-menu";
+import { MarkButton } from "../tiptap-ui/mark-button";
+import { TextAlignButton } from "../tiptap-ui/text-align-button";
+import { UndoRedoButton } from "../tiptap-ui/undo-redo-button";
 
 const MainToolbarContent = ({
   onHighlighterClick,
