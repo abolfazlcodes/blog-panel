@@ -7,6 +7,7 @@ import { router as authRouter } from "./src/routes/auth.js";
 import { router as blogRouter } from "./src/routes/blog.js";
 import { router as mediaFileRouter } from "./src/routes/media-file.js";
 import { router as projectRouter } from "./src/routes/projects.js";
+import { router as profileRouter } from "./src/routes/profile.js";
 import { ICustomError } from "./src/types/index.js";
 
 // make sure __dirname is defined for ES modules
@@ -41,6 +42,7 @@ app.use(authRouter);
 app.use(blogRouter);
 app.use(projectRouter);
 app.use(mediaFileRouter);
+app.use(profileRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({

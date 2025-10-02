@@ -1,4 +1,4 @@
-[data-theme='dark'] {
+/* [data-theme='dark'] {
   --background-main: #161c24;
   --panel-bg: #161c24;
   --background: #212b36;
@@ -11,7 +11,7 @@
   --icon-bg: #fff;
 
   --gray-700: #fff;
-}
+} */
 
 [data-theme='light'] {
   --background-main: #ffffff;

@@ -1,4 +1,4 @@
-// import { ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { NavLink } from "react-router";
 import { Button } from "./Button";
 
@@ -40,18 +40,18 @@ const HeaderNavigation = () => {
         </ul>
 
         <div>
-          {/* <div className="border border-green-600 rounded-full flex items-center justify-center gap-x-4 p-2 bg-green-200 font-semibold">
+          <div className="border border-success rounded-full flex items-center justify-center gap-x-4 p-2 bg-success-lighter font-semibold">
             <p>Abolfazl Jamshidi</p>
             <ArrowDown className="w-4 h-4" />
-          </div> */}
-          <NavLink to={"/login"}>
+          </div>
+          {/* <NavLink to={"/login"}>
             <Button
               colorType="success"
               className="bg-green-500 cursor-pointer w-24 px-3 py-1 rounded-sm text-white font-bold"
             >
               Login
             </Button>
-          </NavLink>
+          </NavLink> */}
         </div>
       </div>
     </header>
