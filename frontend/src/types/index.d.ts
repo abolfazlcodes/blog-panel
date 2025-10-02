@@ -10,3 +10,8 @@ declare type TLoadingBehavior = {
   isLoading?: boolean;
   loadingText?: string;
 };
+
+declare type TResponse<T> = {
+  message: string;
+  data: T;
+};
