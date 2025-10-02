@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router";
 import { lazy, Suspense } from "react";
 import PageLayout from "./components/common/PageLayout";
-import SingleBlogPage from "./pages/SingleBlog";
 import QueryProvider from "./providers/QueryClientProvider";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -10,6 +9,7 @@ import { ClipLoader } from "react-spinners";
 const LoginPage = lazy(() => import("./pages/Login"));
 const HomePage = lazy(() => import("./pages/Home"));
 const BlogPage = lazy(() => import("./pages/Blogs"));
+const AddBlogPagePage = lazy(() => import("./pages/AddBlog"));
 const UpdateBlogPage = lazy(() => import("./pages/UpdateBlog"));
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
           >
             <Route index element={<HomePage />} />
             <Route path="/blogs" element={<BlogPage />} />
-            <Route path="/add-blog" element={<SingleBlogPage />} />
+            <Route path="/add-blog" element={<AddBlogPagePage />} />
             <Route path="/update-blog/:id" element={<UpdateBlogPage />} />
           </Route>
         </Routes>

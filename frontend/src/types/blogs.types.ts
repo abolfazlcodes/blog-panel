@@ -17,5 +17,14 @@ export interface ISingleBlogData extends IBlogsCardProps {
   content: string;
 }
 
+export interface IBlogFormProps {
+  title: string;
+  short_description: string;
+  description: string;
+  content: string;
+  cover_image: string;
+}
+
 export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
 export type TBlogsDataResponseProps = TResponseArr<IBlogsCardProps>;
+export type TCreateBlogResponseProps = TResponse<object>;
