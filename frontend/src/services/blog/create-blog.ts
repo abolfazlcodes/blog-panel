@@ -6,7 +6,7 @@ import type {
 import { useMutation } from "@tanstack/react-query";
 
 const createBlog = async (data: IBlogFormProps) => {
-  return await createData<TCreateBlogResponseProps>("blog", data);
+  return await createData<TCreateBlogResponseProps>("/blog", data);
 };
 
 export const useCreateBlog = () => {

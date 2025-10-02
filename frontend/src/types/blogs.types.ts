@@ -25,6 +25,10 @@ export interface IBlogFormProps {
   cover_image: string;
 }
 
+export interface IBlogFormDefaultValues extends IBlogFormProps {
+  id: string;
+}
+
 export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
 export type TBlogsDataResponseProps = TResponseArr<IBlogsCardProps>;
 export type TCreateBlogResponseProps = TResponse<object>;
