@@ -1,19 +1,26 @@
 import BlogTextEditor from "@/components/common/BlogTextEditor";
+import { useGetSingleBlog } from "@/services/blog/blog-single";
 import { useState } from "react";
+import { useParams } from "react-router";
+import { ClipLoader } from "react-spinners";
 
 const UpdateBlog = () => {
-  const [content, setContent] = useState(`
-      <h1>hello</h1>
-      <blockquote>Nothing is impossible</blockquote>
-    `);
-  console.log(content);
+  const { id } = useParams();
+  const { blogData, isGettingBlog } = useGetSingleBlog(id);
+  const [content, setContent] = useState("");
+
+  console.log(content, "new content", blogData?.content);
 
   return (
     <main className="min-h-svh">
-      <BlogTextEditor
-        content={content}
-        onChange={(editorContent) => setContent(editorContent)}
-      />
+      {isGettingBlog ? (
+        <ClipLoader size={6} />
+      ) : (
+        <BlogTextEditor
+          content={blogData?.content as string}
+          onChange={(editorContent) => setContent(editorContent)}
+        />
+      )}
     </main>
   );
 };
