@@ -41,7 +41,7 @@ function variantWrapperClasses(
 ) {
   const s = getSizeClasses(size);
   const base =
-    "relative flex dark:!bg-gray-900 rounded-lg transition-all focus-within:outline-hidden";
+    "relative flex rounded-lg transition-all focus-within:outline-hidden";
   const alignment = variant === "outlined" ? "items-center" : "items-end";
   const height = variant === "outlined" ? undefined : s.wrapper;
   const container = customTwMerge(base, alignment, height);
