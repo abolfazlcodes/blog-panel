@@ -109,7 +109,7 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
   }, [editor, content]);
 
   return (
-    <div className="border border-blue-500 h-full w-full">
+    <div className="h-full w-full">
       <div className="simple-editor-wrapper !my-4">
         <EditorContext.Provider value={{ editor }}>
           <Toolbar
@@ -138,6 +138,7 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
           <EditorContent
             editor={editor}
             role="presentation"
+            placeholder="Start typing ...."
             className="simple-editor-content !p-4 focus:!outline-none"
           />
         </EditorContext.Provider>
