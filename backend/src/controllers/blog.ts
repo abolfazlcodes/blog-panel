@@ -26,9 +26,24 @@ export const getAllBlogsHandler = async (
       throw error;
     }
 
+    const allBlogsFormatted = allBlogs?.map((blogItem) => ({
+      id: blogItem?.id,
+      title: blogItem?.title,
+      short_description: blogItem?.short_description,
+      description: blogItem?.description,
+      slug: blogItem?.slug,
+      cover_image: blogItem?.cover_image,
+      likes_count: blogItem?.likes_count,
+      views_count: blogItem?.views_count,
+      created_at: blogItem?.created_at,
+      published_at: blogItem?.published_at,
+      updated_at: blogItem?.updated_at,
+      is_draft: blogItem?.is_draft,
+    }));
+
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
-      data: allBlogs,
+      data: allBlogsFormatted,
     });
   } catch (error) {
     next(error);

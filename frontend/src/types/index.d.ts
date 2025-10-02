@@ -15,3 +15,8 @@ declare type TResponse<T> = {
   message: string;
   data: T;
 };
+
+declare type TResponseArr<T> = {
+  message: string;
+  data: T[];
+};
