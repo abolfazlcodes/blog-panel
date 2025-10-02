@@ -10,6 +10,7 @@ import { ClipLoader } from "react-spinners";
 const LoginPage = lazy(() => import("./pages/Login"));
 const HomePage = lazy(() => import("./pages/Home"));
 const BlogPage = lazy(() => import("./pages/Blogs"));
+const UpdateBlogPage = lazy(() => import("./pages/UpdateBlog"));
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="/blogs" element={<BlogPage />} />
             <Route path="/add-blog" element={<SingleBlogPage />} />
+            <Route path="/update-blog/:id" element={<UpdateBlogPage />} />
           </Route>
         </Routes>
 

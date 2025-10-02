@@ -1,4 +1,4 @@
-import BlogCard from "@/components/common/BlogCard";
+import BlogsSection from "@/components/sections/BlogsSection";
 
 const HomePage = () => {
   return (
@@ -7,11 +7,7 @@ const HomePage = () => {
         <h1>Here are your top stories</h1>
       </header>
 
-      <section className="flex flex-wrap gap-6 p-2 my-10">
-        <BlogCard />
-        <BlogCard />
-        <BlogCard />
-      </section>
+      <BlogsSection />
     </main>
   );
 };
