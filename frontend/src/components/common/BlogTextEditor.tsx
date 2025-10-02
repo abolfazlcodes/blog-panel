@@ -102,6 +102,12 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
     }
   }, [isMobile, mobileView]);
 
+  useEffect(() => {
+    if (editor && content && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [editor, content]);
+
   return (
     <div className="border border-blue-500 h-full w-full">
       <div className="simple-editor-wrapper !my-4">

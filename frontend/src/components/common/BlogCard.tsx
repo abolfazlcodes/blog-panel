@@ -10,12 +10,12 @@ const BlogCard: React.FC<IBlogsCardProps> = ({
   description,
   is_draft,
   likes_count,
-  slug,
+  id,
   views_count,
 }) => {
   return (
     <a
-      href={`/update-blog/${slug}`}
+      href={`/update-blog/${id}`}
       className={customTwMerge(
         "flex w-full h-full gap-4 py-4 border-b border-gray-200 hover:bg-gray-50 transition-colors",
         is_draft && "opacity-50"

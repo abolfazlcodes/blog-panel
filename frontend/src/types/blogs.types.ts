@@ -13,4 +13,9 @@ export interface IBlogsCardProps {
   is_draft: true;
 }
 
+export interface ISingleBlogData extends IBlogsCardProps {
+  content: string;
+}
+
+export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
 export type TBlogsDataResponseProps = TResponseArr<IBlogsCardProps>;
