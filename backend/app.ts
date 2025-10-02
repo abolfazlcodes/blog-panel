@@ -29,7 +29,7 @@ app.use(
       callback(null, origin); // allow the requesting origin
     },
     credentials: true, // allow cookies or Authorization headers
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
