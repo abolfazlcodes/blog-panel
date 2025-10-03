@@ -2,6 +2,7 @@
 import type { Node as TiptapNode } from "@tiptap/pm/model";
 import { NodeSelection, Selection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
+import Cookies from "js-cookie";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -294,6 +295,7 @@ export const handleImageUpload = async (
   onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
 ): Promise<string> => {
+  const token = Cookies.get("auth_token");
   if (!file) {
     throw new Error("No file provided");
   }
@@ -312,7 +314,7 @@ export const handleImageUpload = async (
     body: formData,
     signal: abortSignal,
     headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImVtYWlsIjoiYWJvbGZhemxqYW1zaGlkaWRldkBnbWFpbC5jb20iLCJpYXQiOjE3NTg4MjU0MjQsImV4cCI6MTc1ODgyOTAyNH0.NvaVhHBk1fvKf4JrtjgpSrmTq711pi-liy-61nnoC_w`,
+      Authorization: `Bearer ${token}`,
     },
     credentials: "include", // important if your backend uses cookies for auth
   });

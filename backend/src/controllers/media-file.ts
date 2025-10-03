@@ -28,17 +28,34 @@ export const uploadFileHandler = async (
       throw error;
     }
 
-    // hash to prevent duplicates
+    // generate hash
     const hash = crypto.createHash("md5").update(req.file.buffer).digest("hex");
     const ext = path.extname(req.file.originalname);
     const fileName = hash + ext;
     const filePath = path.join(uploadDir, fileName);
 
-    // save new file
-    fs.writeFileSync(filePath, req.file.buffer);
+    // avoid duplicate writes if file already exists
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, req.file.buffer);
+    }
+
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${fileName}`;
 
-    return res.json({ url: fileUrl });
+    // Save to DB (MediaFile)
+    const mediaFile = await prisma.mediaFile.upsert({
+      where: { hash }, // ensure uniqueness by hash
+      update: {}, // if exists, do nothing
+      create: {
+        url: fileUrl,
+        filename: req.file.originalname,
+        mime_type: req.file.mimetype,
+        size: req.file.size,
+        hash,
+        userId: userId || null, // optional
+      },
+    });
+
+    return res.json(mediaFile);
   } catch (err) {
     next(err);
   }

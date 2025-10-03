@@ -15,9 +15,8 @@ export const getAllBlogsHandler = async (
 
   try {
     const allBlogs = await prisma.blog.findMany({
-      where: {
-        userId: userId,
-      },
+      where: { userId: userId },
+      include: { cover_image: true }, // include relation
     });
 
     if (!allBlogs) {
@@ -32,7 +31,7 @@ export const getAllBlogsHandler = async (
       short_description: blogItem?.short_description,
       description: blogItem?.description,
       slug: blogItem?.slug,
-      cover_image: blogItem?.cover_image,
+      cover_image: blogItem?.cover_image?.url || null, // get URL from MediaFile
       likes_count: blogItem?.likes_count,
       views_count: blogItem?.views_count,
       created_at: blogItem?.created_at,
@@ -62,10 +61,8 @@ export const getSingleBlogHandler = async (
   try {
     // check if the blog with that id exists
     const blogDoc = await prisma.blog.findUnique({
-      where: {
-        id: +blogId,
-        userId: userId,
-      },
+      where: { id: blogId, userId },
+      include: { cover_image: true },
     });
 
     if (!blogDoc) {
@@ -80,7 +77,7 @@ export const getSingleBlogHandler = async (
       title: blogDoc?.title,
       short_description: blogDoc?.short_description,
       description: blogDoc?.description,
-      cover_image: blogDoc?.cover_image,
+      cover_image: blogDoc.cover_image?.url || null,
       content: blogDoc?.content,
       updated_at: blogDoc?.updated_at,
       published_at: blogDoc?.published_at,
@@ -105,7 +102,6 @@ export const createBlogHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
-
   const { title, short_description, description, cover_image, content } =
     req.body;
 
@@ -145,17 +141,18 @@ export const createBlogHandler = async (
       short_description,
       description,
       content,
-      cover_image,
       views_count: 0,
       likes_count: 0,
       is_draft: true,
-      userId: userId, // the logged in userId
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      user: { connect: { id: userId } },
+      cover_image: cover_image ? { connect: { id: cover_image } } : undefined,
     };
 
     const result = await prisma.blog.create({
       data: newBlog,
+      include: { cover_image: true },
     });
 
     if (!result) {
@@ -201,20 +198,24 @@ export const updateBlogHandler = async (
     }
 
     const updatedContent = {
-      ...blog,
       title,
       short_description,
       description,
       content,
       cover_image,
+      updated_at: new Date(),
     };
 
+    if (cover_image) {
+      updatedContent.cover_image = { connect: { id: cover_image } };
+    } else {
+      updatedContent.cover_image = { disconnect: true }; // remove if null
+    }
+
     const updatedBlog = await prisma.blog.update({
-      where: {
-        id: +blogId,
-        userId: userId,
-      },
+      where: { id: blogId },
       data: updatedContent,
+      include: { cover_image: true },
     });
 
     if (!updatedBlog) {
@@ -385,9 +386,13 @@ export const getPublishedSingleBlogHandler = async (
           username,
         },
       },
+      include: {
+        cover_image: true,
+        user: true,
+      },
     });
 
-    if (!blogDoc) {
+    if (!blogDoc || blogDoc.is_draft || blogDoc.user.username !== username) {
       const error = new CustomError("No blog is found.");
       error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
       throw error;
@@ -395,15 +400,9 @@ export const getPublishedSingleBlogHandler = async (
 
     // update views_count whenever the id of this blog is hit
     const updatedBlog = await prisma.blog.update({
-      where: {
-        id: +blogId,
-        user: {
-          username,
-        },
-      },
-      data: {
-        views_count: blogDoc?.views_count + 1,
-      },
+      where: { id: blogId },
+      data: { views_count: blogDoc.views_count + 1 },
+      include: { cover_image: true },
     });
 
     const formattedBlog = {
@@ -412,7 +411,7 @@ export const getPublishedSingleBlogHandler = async (
       title: updatedBlog?.title,
       short_description: updatedBlog?.short_description,
       description: updatedBlog?.description,
-      cover_image: updatedBlog?.cover_image,
+      cover_image: updatedBlog.cover_image?.url || null,
       content: updatedBlog?.content,
       updated_at: updatedBlog?.updated_at,
       published_at: updatedBlog?.published_at,
