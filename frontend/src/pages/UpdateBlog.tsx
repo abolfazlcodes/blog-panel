@@ -35,6 +35,7 @@ const UpdateBlog = () => {
             description: blogData?.description,
             short_description: blogData?.short_description,
             title: blogData?.title,
+            is_draft: blogData?.is_draft,
           }}
         />
       </main>
