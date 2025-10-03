@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { customTwMerge } from "@/utils/custom-tailwind-merge";
@@ -25,7 +26,7 @@ function getSizeClasses(size: NonNullable<TextFieldProps["size"]>) {
   } as const;
 }
 
-function baseContainerClasses(disabled?: boolean, error?: boolean) {
+function baseContainerClasses(disabled?: boolean, _error?: boolean) {
   return customTwMerge(
     "group relative inline-flex w-full flex-col text-primary-text transition-all",
     disabled && "opacity-80 cursor-not-allowed",
@@ -71,7 +72,7 @@ function variantWrapperClasses(
 function labelBaseClasses(
   variant: NonNullable<TextFieldProps["variant"]>,
   size: NonNullable<TextFieldProps["size"]>,
-  error?: boolean,
+  _error?: boolean,
   disabled?: boolean
 ) {
   const s = getSizeClasses(size);

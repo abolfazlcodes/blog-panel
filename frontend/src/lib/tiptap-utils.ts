@@ -1,4 +1,5 @@
 /* eslint-disable no-useless-escape */
+import { API_URL } from "@/core/http-service";
 import type { Node as TiptapNode } from "@tiptap/pm/model";
 import { NodeSelection, Selection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
@@ -286,13 +287,13 @@ export function isNodeTypeSelected(
 /**
  * Handles image upload with progress tracking and abort capability
  * @param file The file to upload
- * @param onProgress Optional callback for tracking upload progress
+ * @param _onProgress Optional callback for tracking upload progress
  * @param abortSignal Optional AbortSignal for cancelling the upload
  * @returns Promise resolving to the URL of the uploaded image
  */
 export const handleImageUpload = async (
   file: File,
-  onProgress?: (event: { progress: number }) => void,
+  _onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
 ): Promise<string> => {
   const token = Cookies.get("auth_token");
@@ -309,7 +310,7 @@ export const handleImageUpload = async (
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await fetch(`http://localhost:8080/upload`, {
+  const response = await fetch(`${API_URL}/upload`, {
     method: "POST",
     body: formData,
     signal: abortSignal,
