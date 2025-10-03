@@ -19,6 +19,7 @@ export const getAllProjectsHandler = async (
       where: {
         userId: userId,
       },
+      include: { cover_image: true },
     });
 
     if (!allProjects) {
@@ -33,7 +34,7 @@ export const getAllProjectsHandler = async (
       short_description: item?.short_description,
       description: item?.description,
       slug: item?.slug,
-      cover_image: item?.cover_image,
+      cover_image: item?.cover_image?.url || null, // get URL from MediaFile
       is_draft: item?.is_draft,
       updated_at: item?.updated_at,
       published_at: item?.published_at,
@@ -64,6 +65,7 @@ export const getSingleProjectHandler = async (
         id: +projectId,
         userId: userId,
       },
+      include: { cover_image: true },
     });
 
     if (!projectDoc) {
@@ -78,7 +80,7 @@ export const getSingleProjectHandler = async (
       title: projectDoc?.title,
       short_description: projectDoc?.short_description,
       description: projectDoc?.description,
-      cover_image: projectDoc?.cover_image,
+      cover_image: projectDoc.cover_image?.url || null,
       content: projectDoc?.content,
       updated_at: projectDoc?.updated_at,
       published_at: projectDoc?.published_at,
@@ -137,16 +139,17 @@ export const createProjectHandler = async (
       slug,
       short_description,
       description,
-      cover_image,
       content,
       is_draft: true,
-      userId: userId, // the logged in userId
       published_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      user: { connect: { id: userId } },
+      cover_image: cover_image ? { connect: { id: cover_image } } : undefined,
     };
 
     const result = await prisma.project.create({
       data: newProject,
+      include: { cover_image: true },
     });
 
     if (!result) {
@@ -192,20 +195,26 @@ export const updateProjectHandler = async (
     }
 
     const updatedContent = {
-      ...projectDoc,
       title,
       short_description,
       description,
       content,
       cover_image,
+      updated_at: new Date(),
     };
+
+    if (cover_image) {
+      updatedContent.cover_image = { connect: { id: cover_image } };
+    } else {
+      updatedContent.cover_image = { disconnect: true }; // remove if null
+    }
 
     const updatedBlog = await prisma.project.update({
       where: {
         id: +projectId,
-        userId: userId,
       },
       data: updatedContent,
+      include: { cover_image: true },
     });
 
     if (!updatedBlog) {
@@ -338,6 +347,10 @@ export const getPublishedProjectHandler = async (
           username,
         },
       },
+      include: {
+        cover_image: true,
+        user: true,
+      },
     });
 
     if (!allPublishedProjects) {
@@ -346,9 +359,22 @@ export const getPublishedProjectHandler = async (
       throw error;
     }
 
+    const formattedProjects = allPublishedProjects.map((item) => ({
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      short_description: item.short_description,
+      description: item.description,
+      cover_image: item.cover_image?.url || null, // use relation
+      content: item.content,
+      updated_at: item.updated_at,
+      published_at: item.published_at,
+      is_draft: item.is_draft,
+    }));
+
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
-      data: allPublishedProjects,
+      data: formattedProjects,
     });
   } catch (error) {
     next(error);
@@ -361,19 +387,16 @@ export const getPublishedSingleProjectHandler = async (
   next: NextFunction
 ) => {
   const username = req.params.username;
-
   const projectId = parseInt(req.params.id);
 
   try {
-    // check if the project with that id exists
-    const projectDoc = await prisma.project.findUnique({
+    const projectDoc = await prisma.project.findFirst({
       where: {
-        id: +projectId,
+        id: projectId,
         is_draft: false,
-        user: {
-          username,
-        },
+        user: { username },
       },
+      include: { cover_image: true, user: true },
     });
 
     if (!projectDoc) {
@@ -383,16 +406,16 @@ export const getPublishedSingleProjectHandler = async (
     }
 
     const formattedProject = {
-      id: projectDoc?.id,
-      slug: projectDoc?.slug,
-      title: projectDoc?.title,
-      short_description: projectDoc?.short_description,
-      description: projectDoc?.description,
-      cover_image: projectDoc?.cover_image,
-      content: projectDoc?.content,
-      updated_at: projectDoc?.updated_at,
-      published_at: projectDoc?.published_at,
-      is_draft: projectDoc?.is_draft,
+      id: projectDoc.id,
+      slug: projectDoc.slug,
+      title: projectDoc.title,
+      short_description: projectDoc.short_description,
+      description: projectDoc.description,
+      cover_image: projectDoc.cover_image?.url || null,
+      content: projectDoc.content,
+      updated_at: projectDoc.updated_at,
+      published_at: projectDoc.published_at,
+      is_draft: projectDoc.is_draft,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({

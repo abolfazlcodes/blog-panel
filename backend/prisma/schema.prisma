@@ -24,6 +24,7 @@ model User {
 
   blogs Blog[]
   projects Project[]
+  mediaFiles MediaFile[]  
 }
 
 model Blog {
@@ -32,7 +33,6 @@ model Blog {
   short_description String?
   description       String
   slug              String   @unique
-  cover_image       String?
   content           String
   likes_count       Int      @default(0)
   views_count       Int      @default(0)
@@ -43,6 +43,9 @@ model Blog {
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  cover_imageId Int?
+  cover_image   MediaFile? @relation(fields: [cover_imageId], references: [id])
 }
 
 model Project {
@@ -50,7 +53,6 @@ model Project {
   title             String
   short_description String?
   description       String
-  cover_image       String?
   content           String
   slug              String   @unique
   published_at      DateTime @default(now())
@@ -59,4 +61,25 @@ model Project {
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+ // Relation to MediaFile
+  cover_imageId Int?
+  cover_image   MediaFile? @relation(fields: [cover_imageId], references: [id])
 } 
+
+
+model MediaFile {
+  id         Int      @id @default(autoincrement())
+  url        String   @unique
+  filename   String
+  mime_type  String
+  size       Int
+  hash       String   @unique
+  created_at DateTime @default(now())
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  blogs    Blog[]
+  projects Project[]
+}
