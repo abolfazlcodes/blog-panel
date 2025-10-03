@@ -14,6 +14,7 @@ import BlogTextEditor from "../common/BlogTextEditor";
 import { useUpdateBlog } from "@/services/blog/update-blog";
 import { usePublishBlog } from "@/services/blog/publish-blog";
 import { ClipLoader } from "react-spinners";
+import { HelperText } from "../common/HelperText";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -26,6 +27,7 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
     formState: { errors },
     handleSubmit,
     reset,
+    setError,
   } = useForm<IBlogFormProps>({
     defaultValues: {
       title: "",
@@ -65,8 +67,17 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
             queryClient.refetchQueries({ queryKey: ["blogs"], exact: false });
             reset();
           },
-          onError: (errors) => {
-            console.log(errors);
+          onError: (error) => {
+            console.log(error);
+            const apiError = error.cause as TApiErrorResponse;
+            if (apiError.errors) {
+              Object.entries(apiError.errors).forEach(([key, values]) => {
+                setError(key as keyof IBlogFormProps, {
+                  type: "custom",
+                  message: values[0],
+                });
+              });
+            }
           },
         }
       );
@@ -76,7 +87,10 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
   const handlePublishBlog = () => {
     if (defaultValues) {
       publishBlogMutation.mutate(
-        { id: defaultValues.id },
+        {
+          id: defaultValues.id,
+          shouldPublish: defaultValues?.is_draft ? false : true,
+        },
         {
           onSuccess: (response) => {
             toast.success(response?.data?.message);
@@ -112,6 +126,10 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
     }
   }, [defaultValues, reset]);
 
+  const isLoading =
+    createBlogMutation?.isPending || updateBlogMutation?.isPending;
+  const isPublishing = publishBlogMutation?.isPending;
+
   return (
     <>
       <header className="flex items-center mb-3 gap-2 justify-end">
@@ -122,13 +140,15 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
           variant="outlined"
           colorType="success"
         >
-          Save
+          {isLoading ? <ClipLoader size={10} /> : "Save"}
         </Button>
         <Button size="sm" colorType="success" onClick={handlePublishBlog}>
-          {publishBlogMutation?.isPending ? (
+          {isPublishing ? (
             <ClipLoader size={10} />
-          ) : (
+          ) : defaultValues?.is_draft ? (
             "Publish"
+          ) : (
+            "Unpublish"
           )}
         </Button>
       </header>
@@ -168,8 +188,12 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
                   value={value}
                   onChange={onChange}
                 />
+
                 {errors?.description?.message && (
-                  <span>{errors?.description?.message}</span>
+                  <HelperText
+                    status="error"
+                    text={errors?.description?.message}
+                  />
                 )}
               </>
             )}
@@ -179,12 +203,18 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
             name="content"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <BlogTextEditor
-                content={value}
-                onChange={(editorContent) => {
-                  onChange(editorContent);
-                }}
-              />
+              <>
+                <BlogTextEditor
+                  content={value}
+                  onChange={(editorContent) => {
+                    onChange(editorContent);
+                  }}
+                />
+
+                {errors?.content?.message && (
+                  <HelperText status="error" text={errors?.content?.message} />
+                )}
+              </>
             )}
           />
         </form>

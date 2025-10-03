@@ -240,6 +240,9 @@ export const publishBlogHandler = async (
   // @ts-ignore
   const userId = req?.userId;
   const blogId = parseInt(req.params.id);
+  const { is_draft } = req?.body;
+
+  const shouldPublish = is_draft ? true : false;
 
   try {
     // find the blog
@@ -258,7 +261,7 @@ export const publishBlogHandler = async (
 
     const updatedContent = {
       ...blog,
-      is_draft: false,
+      is_draft: shouldPublish,
     };
 
     const updatedBlog = await prisma.blog.update({

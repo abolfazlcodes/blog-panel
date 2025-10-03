@@ -27,6 +27,7 @@ export interface IBlogFormProps {
 
 export interface IBlogFormDefaultValues extends IBlogFormProps {
   id: string;
+  is_draft: boolean;
 }
 
 export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
