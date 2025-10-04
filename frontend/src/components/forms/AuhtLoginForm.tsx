@@ -28,7 +28,7 @@ const AuthLoginForm = () => {
     <form
       onSubmit={handleSubmit(loginSubmitHandler)}
       id="login-form"
-      className="flex flex-col gap-y-4 px-4"
+      className="flex flex-col gap-y-4"
     >
       <div className="flex flex-col gap-y-2">
         <TextFieldController

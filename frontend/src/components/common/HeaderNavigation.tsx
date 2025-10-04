@@ -19,15 +19,15 @@ const HeaderNavigation = () => {
       <div className="flex items-center gap-2">
         <NavLink
           to={"/"}
-          className={"block w-14 rounded-full overflow-hidden h-14 relative"}
+          className={"block w-10 rounded-full overflow-hidden h-10 relative"}
         >
           <img
-            src="/logo.png"
+            src="/notiq-logo.png"
             className="w-full h-full absolute object-cover object-center"
           />
         </NavLink>
 
-        <p className="pt-3">Welcome back, {userInfo?.name}</p>
+        <p className="">Welcome, {userInfo?.name?.split(" ")[0]}</p>
       </div>
 
       <div className="flex items-center gap-x-4">
