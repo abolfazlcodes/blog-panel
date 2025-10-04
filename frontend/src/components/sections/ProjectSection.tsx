@@ -1,17 +1,17 @@
-import { useGetBlogs } from "@/services/blog/blogs-list";
-import BlogCard from "../common/BlogCard";
+import { useGetProjects } from "@/services/projects/projects-list";
 import { ClipLoader } from "react-spinners";
+import ProjectCard from "../common/ProjectCard";
 
-const BlogsSection = () => {
-  const { blogs, isGettingBlogs } = useGetBlogs();
+const ProjectSection = () => {
+  const { isGettingProjects, projects } = useGetProjects();
 
-  if (isGettingBlogs) {
+  if (isGettingProjects) {
     <section className="flex items-center justify-center p-2 my-10">
       <ClipLoader size={6} />
     </section>;
   }
 
-  if (!blogs || blogs?.length === 0) {
+  if (!projects || projects?.length === 0) {
     return (
       <section className="flex items-center justify-center p-2 my-10">
         no blog exists. please start writing
@@ -21,11 +21,11 @@ const BlogsSection = () => {
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2 my-5">
-      {blogs?.map((blogItem) => (
-        <BlogCard key={blogItem?.id} {...blogItem} />
+      {projects?.map((projectItem) => (
+        <ProjectCard key={projectItem?.id} {...projectItem} />
       ))}
     </section>
   );
 };
 
-export default BlogsSection;
+export default ProjectSection;

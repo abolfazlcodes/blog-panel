@@ -1,13 +1,22 @@
 import BlogsSection from "@/components/sections/BlogsSection";
+import ProjectSection from "@/components/sections/ProjectSection";
 
 const HomePage = () => {
   return (
     <main className="min-h-svh">
-      <header className="px-2 py-4 text-xl font-serif font-extrabold">
-        <h1>Here are your top stories</h1>
-      </header>
+      <section>
+        <header className="px-2 py-4 text-xl font-serif font-extrabold">
+          <h2 className="text-d-h4 font-bold">Your Top Blogs</h2>
+        </header>
+        <BlogsSection />
+      </section>
 
-      <BlogsSection />
+      <section>
+        <header className="px-2 py-4 text-xl font-serif font-extrabold">
+          <h2 className="text-d-h4 font-bold">Your Top Projects</h2>
+        </header>
+        <ProjectSection />
+      </section>
     </main>
   );
 };
