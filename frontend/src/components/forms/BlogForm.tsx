@@ -142,15 +142,18 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
         >
           {isLoading ? <ClipLoader size={10} /> : "Save"}
         </Button>
-        <Button size="sm" colorType="success" onClick={handlePublishBlog}>
-          {isPublishing ? (
-            <ClipLoader size={10} />
-          ) : defaultValues?.is_draft ? (
-            "Publish"
-          ) : (
-            "Unpublish"
-          )}
-        </Button>
+
+        {defaultValues && (
+          <Button size="sm" colorType="success" onClick={handlePublishBlog}>
+            {isPublishing ? (
+              <ClipLoader size={10} />
+            ) : defaultValues?.is_draft ? (
+              "Publish"
+            ) : (
+              "Unpublish"
+            )}
+          </Button>
+        )}
       </header>
 
       <section className="" id="add-blog-section">
