@@ -38,6 +38,7 @@ export const getAllProjectsHandler = async (
       is_draft: item?.is_draft,
       updated_at: item?.updated_at,
       published_at: item?.published_at,
+      is_featured: item?.is_featured,
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -85,6 +86,7 @@ export const getSingleProjectHandler = async (
       updated_at: projectDoc?.updated_at,
       published_at: projectDoc?.published_at,
       is_draft: projectDoc?.is_draft,
+      is_featured: projectDoc?.is_featured,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -103,8 +105,14 @@ export const createProjectHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
-  const { title, short_description, description, content, cover_image } =
-    req.body;
+  const {
+    title,
+    short_description,
+    description,
+    content,
+    cover_image,
+    is_featured,
+  } = req.body;
 
   try {
     const slug = slugify.default(title, {
@@ -140,6 +148,7 @@ export const createProjectHandler = async (
       short_description,
       description,
       content,
+      is_featured,
       is_draft: true,
       published_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -176,8 +185,14 @@ export const updateProjectHandler = async (
   // @ts-ignore
   const userId = req?.userId;
   const projectId = parseInt(req.params.id);
-  const { title, short_description, description, content, cover_image } =
-    req.body;
+  const {
+    title,
+    short_description,
+    description,
+    content,
+    cover_image,
+    is_featured,
+  } = req.body;
 
   try {
     // find the project
@@ -200,6 +215,7 @@ export const updateProjectHandler = async (
       description,
       content,
       cover_image,
+      is_featured,
       updated_at: new Date(),
     };
 

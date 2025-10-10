@@ -8,6 +8,7 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
   short_description,
   is_draft,
   id,
+  is_featured,
 }) => {
   return (
     <article className="group hover:shadow-drop-down transition-all duration-300 hover:-translate-y-2 w-full bg-white rounded-lg shadow-card overflow-hidden p-6">
@@ -26,9 +27,11 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
         </figure>
 
         <div className="flex items-center gap-2">
-          <span className="bg-success-lighter text-success text-m-body2 flex items-center justify-center text-center w-max py-2 px-4 uppercase">
-            featured
-          </span>
+          {is_featured && (
+            <span className="bg-success-lighter text-success text-m-body2 flex items-center justify-center text-center w-max py-2 px-4 uppercase">
+              featured
+            </span>
+          )}
           <span className="bg-error-lighter text-error text-m-body2 flex items-center justify-center text-center w-max py-2 px-4 uppercase">
             {is_draft ? "not published" : "published"}
           </span>

@@ -8,7 +8,8 @@ export interface IProjectCardProps {
   created_at: string;
   published_at: string;
   updated_at: string;
-  is_draft: true;
+  is_draft: boolean;
+  is_featured: boolean;
 }
 
 // export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
