@@ -86,7 +86,7 @@ router.put(
   updateProjectHandler
 );
 
-router.patch("/blog/:id", isAuthenticatedValidator, publishProjectHandler);
+router.patch("/project/:id", isAuthenticatedValidator, publishProjectHandler);
 router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
 
 // public api routes:

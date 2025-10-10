@@ -256,6 +256,9 @@ export const publishProjectHandler = async (
   // @ts-ignore
   const userId = req?.userId;
   const projectId = parseInt(req.params.id);
+  const { is_draft } = req?.body;
+
+  const shouldPublish = is_draft ? true : false;
 
   try {
     // find the project
@@ -274,7 +277,7 @@ export const publishProjectHandler = async (
 
     const updatedContent = {
       ...project,
-      is_draft: false,
+      is_draft: shouldPublish,
     };
 
     const updatedProject = await prisma.project.update({
