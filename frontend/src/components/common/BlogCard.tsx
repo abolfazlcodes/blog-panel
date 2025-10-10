@@ -1,4 +1,5 @@
 import type { IBlogsCardProps } from "@/types/blogs.types";
+import { displayBlogReadingTime } from "@/utils";
 import { convertDateFormat } from "@/utils/date";
 import { Eye, Heart } from "lucide-react";
 
@@ -11,6 +12,7 @@ const BlogCard: React.FC<IBlogsCardProps> = ({
   likes_count,
   id,
   views_count,
+  reading_time,
 }) => {
   return (
     <article className="group hover:shadow-drop-down transition-all duration-300 hover:-translate-y-2 w-full bg-white rounded-lg shadow-card overflow-hidden p-6">
@@ -68,7 +70,7 @@ const BlogCard: React.FC<IBlogsCardProps> = ({
               <span className="text-secondary-text text-d-caption">|</span>
 
               <div className="flex items-center text-secondary-text text-d-caption gap-1">
-                <span>2 min read</span>
+                <span>{displayBlogReadingTime(reading_time)} min read</span>
               </div>
             </div>
 
