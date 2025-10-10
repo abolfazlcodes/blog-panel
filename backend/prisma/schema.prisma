@@ -40,6 +40,7 @@ model Blog {
   published_at      DateTime @default(now())
   updated_at        DateTime @updatedAt
   is_draft          Boolean  @default(true)
+  reading_time      Float?
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)

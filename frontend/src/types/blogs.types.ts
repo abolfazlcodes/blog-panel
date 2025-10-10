@@ -11,6 +11,7 @@ export interface IBlogsCardProps {
   published_at: string;
   updated_at: string;
   is_draft: true;
+  reading_time: number;
 }
 
 export interface ISingleBlogData extends IBlogsCardProps {

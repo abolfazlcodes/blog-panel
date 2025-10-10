@@ -1,9 +1,11 @@
 import { NextFunction, Response, Request } from "express";
 import slugify from "slugify";
+import readingTime from "reading-time";
 
 import prisma from "../prisma.js";
 import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
+import { extractPlainTextFromTiptap } from "../utils/index.js";
 
 export const getAllBlogsHandler = async (
   req: Request,
@@ -38,6 +40,7 @@ export const getAllBlogsHandler = async (
       published_at: blogItem?.published_at,
       updated_at: blogItem?.updated_at,
       is_draft: blogItem?.is_draft,
+      reading_time: blogItem?.reading_time,
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -134,6 +137,9 @@ export const createBlogHandler = async (
       throw error;
     }
 
+    const plainText = extractPlainTextFromTiptap(JSON.parse(content));
+    const stats = readingTime(plainText);
+
     // create blog content
     const newBlog = {
       title,
@@ -144,6 +150,7 @@ export const createBlogHandler = async (
       views_count: 0,
       likes_count: 0,
       is_draft: true,
+      reading_time: stats?.minutes,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user: { connect: { id: userId } },
@@ -197,12 +204,19 @@ export const updateBlogHandler = async (
       throw error;
     }
 
+    let reading_time = blog.reading_time;
+    if (content && content !== blog.content) {
+      const plainText = extractPlainTextFromTiptap(JSON.parse(content));
+      reading_time = readingTime(plainText).minutes;
+    }
+
     const updatedContent = {
       title,
       short_description,
       description,
       content,
       cover_image,
+      reading_time,
       updated_at: new Date(),
     };
 
