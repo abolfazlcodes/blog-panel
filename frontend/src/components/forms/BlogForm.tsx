@@ -15,6 +15,7 @@ import { useUpdateBlog } from "@/services/blog/update-blog";
 import { usePublishBlog } from "@/services/blog/publish-blog";
 import { ClipLoader } from "react-spinners";
 import { HelperText } from "../common/HelperText";
+import ToggleButtonController from "../common/Toggle/toggle-button-controller";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -35,6 +36,7 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
       description: "",
       content: "",
       cover_image: "",
+      is_featured: false,
     },
   });
 
@@ -122,6 +124,8 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
 
   useEffect(() => {
     if (defaultValues) {
+      console.log(defaultValues);
+
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
@@ -201,6 +205,17 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
               </>
             )}
           />
+
+          <div className="border-divider bg-bg-main flex w-full items-center justify-between rounded-lg border py-2 ltr:pl-4 rtl:pr-4">
+            <span className="text-secondary-text text-d-body2">Featured:</span>
+
+            <ToggleButtonController
+              size="small"
+              control={control}
+              name="is_featured"
+              label={""}
+            />
+          </div>
 
           <Controller
             name="content"

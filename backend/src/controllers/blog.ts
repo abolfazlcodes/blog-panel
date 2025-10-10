@@ -5,7 +5,7 @@ import readingTime from "reading-time";
 import prisma from "../prisma.js";
 import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
-import { extractPlainTextFromTiptap } from "../utils/index.js";
+import { extractPlainText } from "../utils/index.js";
 
 export const getAllBlogsHandler = async (
   req: Request,
@@ -41,6 +41,7 @@ export const getAllBlogsHandler = async (
       updated_at: blogItem?.updated_at,
       is_draft: blogItem?.is_draft,
       reading_time: blogItem?.reading_time,
+      is_featured: blogItem?.is_featured,
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -87,6 +88,7 @@ export const getSingleBlogHandler = async (
       is_draft: blogDoc?.is_draft,
       views_count: blogDoc?.views_count,
       likes_count: blogDoc?.likes_count,
+      is_featured: blogDoc?.is_featured,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -105,8 +107,14 @@ export const createBlogHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
-  const { title, short_description, description, cover_image, content } =
-    req.body;
+  const {
+    title,
+    short_description,
+    description,
+    cover_image,
+    content,
+    is_featured,
+  } = req.body;
 
   try {
     // create a slug
@@ -137,7 +145,7 @@ export const createBlogHandler = async (
       throw error;
     }
 
-    const plainText = extractPlainTextFromTiptap(JSON.parse(content));
+    const plainText = extractPlainText(content);
     const stats = readingTime(plainText);
 
     // create blog content
@@ -147,6 +155,7 @@ export const createBlogHandler = async (
       short_description,
       description,
       content,
+      is_featured,
       views_count: 0,
       likes_count: 0,
       is_draft: true,
@@ -186,8 +195,14 @@ export const updateBlogHandler = async (
   // @ts-ignore
   const userId = req?.userId;
   const blogId = parseInt(req.params.id);
-  const { title, short_description, description, cover_image, content } =
-    req.body;
+  const {
+    title,
+    short_description,
+    description,
+    cover_image,
+    content,
+    is_featured,
+  } = req.body;
 
   try {
     // find the blog
@@ -206,7 +221,7 @@ export const updateBlogHandler = async (
 
     let reading_time = blog.reading_time;
     if (content && content !== blog.content) {
-      const plainText = extractPlainTextFromTiptap(JSON.parse(content));
+      const plainText = extractPlainText(content);
       reading_time = readingTime(plainText).minutes;
     }
 
@@ -217,6 +232,7 @@ export const updateBlogHandler = async (
       content,
       cover_image,
       reading_time,
+      is_featured,
       updated_at: new Date(),
     };
 
@@ -365,6 +381,12 @@ export const getPublishedBlogsHandler = async (
           username,
         },
       },
+      include: {
+        cover_image: true,
+        user: {
+          select: { username: true, first_name: true, last_name: true },
+        },
+      },
     });
 
     if (!allBlogs) {
@@ -373,9 +395,22 @@ export const getPublishedBlogsHandler = async (
       throw error;
     }
 
+    const formattedBlogs = allBlogs.map((b) => ({
+      id: b.id,
+      title: b.title,
+      slug: b.slug,
+      short_description: b.short_description,
+      description: b.description,
+      cover_image: b.cover_image?.url || null,
+      reading_time: b.reading_time,
+      created_at: b.created_at,
+      published_at: b.published_at,
+      author: b.user.username, // include for public display
+    }));
+
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
-      data: allBlogs,
+      data: formattedBlogs,
     });
   } catch (error) {
     next(error);
@@ -387,51 +422,48 @@ export const getPublishedSingleBlogHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  const username = req.params.username;
-  const blogId = parseInt(req.params.id);
+  const username = decodeURIComponent(req.params.username);
+  const blogId = Number(req.params.id);
+  if (isNaN(blogId)) throw new CustomError("Invalid blog id");
 
   try {
-    // check if the blog with that id exists
-    const blogDoc = await prisma.blog.findUnique({
+    const blogDoc = await prisma.blog.findFirst({
       where: {
-        id: +blogId,
+        id: blogId,
         is_draft: false,
-        user: {
-          username,
-        },
+        user: { username },
       },
       include: {
         cover_image: true,
-        user: true,
+        user: {
+          select: { username: true, first_name: true, last_name: true },
+        },
       },
     });
 
-    if (!blogDoc || blogDoc.is_draft || blogDoc.user.username !== username) {
-      const error = new CustomError("No blog is found.");
+    if (!blogDoc) {
+      const error = new CustomError("No blog found.");
       error.statusCode = HTTP_STATUS_CODES.StatusNotFound;
       throw error;
     }
 
-    // update views_count whenever the id of this blog is hit
-    const updatedBlog = await prisma.blog.update({
+    await prisma.blog.update({
       where: { id: blogId },
-      data: { views_count: blogDoc.views_count + 1 },
-      include: { cover_image: true },
+      data: { views_count: { increment: 1 } },
     });
 
     const formattedBlog = {
-      id: updatedBlog?.id,
-      slug: updatedBlog?.slug,
-      title: updatedBlog?.title,
-      short_description: updatedBlog?.short_description,
-      description: updatedBlog?.description,
-      cover_image: updatedBlog.cover_image?.url || null,
-      content: updatedBlog?.content,
-      updated_at: updatedBlog?.updated_at,
-      published_at: updatedBlog?.published_at,
-      is_draft: updatedBlog?.is_draft,
-      views_count: updatedBlog?.views_count,
-      likes_count: updatedBlog?.likes_count,
+      id: blogDoc.id,
+      slug: blogDoc.slug,
+      title: blogDoc.title,
+      short_description: blogDoc.short_description,
+      description: blogDoc.description,
+      content: blogDoc.content,
+      cover_image: blogDoc.cover_image?.url || null,
+      views_count: blogDoc.views_count + 1,
+      reading_time: blogDoc.reading_time,
+      published_at: blogDoc.published_at,
+      author: blogDoc.user.username,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({

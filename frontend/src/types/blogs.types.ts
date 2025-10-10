@@ -12,6 +12,7 @@ export interface IBlogsCardProps {
   updated_at: string;
   is_draft: true;
   reading_time: number;
+  is_featured: boolean;
 }
 
 export interface ISingleBlogData extends IBlogsCardProps {
@@ -24,11 +25,13 @@ export interface IBlogFormProps {
   description: string;
   content: string;
   cover_image: string;
+  is_featured: boolean;
 }
 
 export interface IBlogFormDefaultValues extends IBlogFormProps {
   id: string;
   is_draft: boolean;
+  is_featured: boolean;
 }
 
 export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;

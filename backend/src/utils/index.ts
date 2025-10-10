@@ -11,3 +11,21 @@ export function extractPlainTextFromTiptap(contentJson: any): string {
 
   return contentJson.content.map(traverse).join(" ");
 }
+
+export function extractPlainText(contentHtml: any): string {
+  let plainText = "";
+
+  try {
+    const contentJSON = JSON.parse(contentHtml);
+    plainText = extractPlainTextFromTiptap(contentJSON);
+  } catch {
+    // Fallback: assume it's HTML
+    plainText =
+      contentHtml
+        ?.replace(/<[^>]+>/g, " ") // remove HTML tags
+        ?.replace(/\s+/g, " ") // normalize spaces
+        ?.trim() || "";
+  }
+
+  return plainText;
+}
