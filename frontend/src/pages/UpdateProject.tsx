@@ -1,10 +1,10 @@
 import Cookies from "js-cookie";
 
 import { Button } from "@/components/common/Button";
-import BlogForm from "@/components/forms/BlogForm";
 import { useNavigate, useParams } from "react-router";
 import { ClipLoader } from "react-spinners";
 import { useGetSingleProject } from "@/services/projects/project-single";
+import ProjectForm from "@/components/forms/ProjectForm";
 
 const UpdateProject = () => {
   const navigate = useNavigate();
@@ -18,8 +18,8 @@ const UpdateProject = () => {
 
   if (isGettingProject) {
     return (
-      <main className="min-h-svh">
-        <ClipLoader size={6} />
+      <main className="min-h-svh flex items-center justify-center">
+        <ClipLoader size={20} />
       </main>
     );
   }
@@ -27,7 +27,7 @@ const UpdateProject = () => {
   if (projectData) {
     return (
       <main className="min-h-svh">
-        <BlogForm
+        <ProjectForm
           defaultValues={{
             id: `${projectData?.id}`,
             content: projectData?.content as string,
@@ -36,6 +36,7 @@ const UpdateProject = () => {
             short_description: projectData?.short_description,
             title: projectData?.title,
             is_draft: projectData?.is_draft,
+            is_featured: projectData?.is_featured,
           }}
         />
       </main>

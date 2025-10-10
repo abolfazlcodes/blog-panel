@@ -56,6 +56,15 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
           },
           onError: (errors) => {
             console.log(errors);
+            const apiError = errors.cause as TApiErrorResponse;
+            if (apiError.errors) {
+              Object.entries(apiError.errors).forEach(([key, values]) => {
+                setError(key as keyof IBlogFormProps, {
+                  type: "custom",
+                  message: values[0],
+                });
+              });
+            }
           },
         }
       );

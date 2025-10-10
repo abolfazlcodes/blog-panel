@@ -18,8 +18,8 @@ const UpdateBlog = () => {
 
   if (isGettingBlog) {
     return (
-      <main className="min-h-svh">
-        <ClipLoader size={6} />
+      <main className="min-h-svh flex items-center justify-center">
+        <ClipLoader size={20} />
       </main>
     );
   }
