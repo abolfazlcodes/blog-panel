@@ -10,12 +10,13 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { Button } from "../common/Button";
 import TextFieldController from "../common/text-field/TextFieldController";
-import BlogTextEditor from "../common/BlogTextEditor";
+import BlogTextEditor, { MAX_FILE_SIZE } from "../common/BlogTextEditor";
 import { useUpdateBlog } from "@/services/blog/update-blog";
 import { usePublishBlog } from "@/services/blog/publish-blog";
 import { ClipLoader } from "react-spinners";
 import { HelperText } from "../common/HelperText";
 import ToggleButtonController from "../common/Toggle/toggle-button-controller";
+import CoverUploaderController from "../common/Uploader/CoverUploaderController";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -175,7 +176,7 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
           className="space-y-4"
           onSubmit={handleSubmit(handleBlogSubmit)}
         >
-          <div className="flex flex-row gap-x-4 gap-y-2">
+          <div className="flex md:flex-row flex-col gap-x-4 gap-y-6">
             <TextFieldController
               control={control}
               name="title"
@@ -225,6 +226,13 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
               label={""}
             />
           </div>
+
+          <CoverUploaderController
+            control={control}
+            name="cover_image"
+            maxFileSize={MAX_FILE_SIZE * 1024 * 1024} // 10MB
+            allowedFormats={["image/jpeg", "image/png", "image/webp"]}
+          />
 
           <Controller
             name="content"

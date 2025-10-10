@@ -163,7 +163,7 @@ export const createBlogHandler = async (
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user: { connect: { id: userId } },
-      cover_image: cover_image ? { connect: { id: cover_image } } : undefined,
+      cover_image: cover_image ? { connect: { url: cover_image } } : undefined,
     };
 
     const result = await prisma.blog.create({
@@ -237,7 +237,7 @@ export const updateBlogHandler = async (
     };
 
     if (cover_image) {
-      updatedContent.cover_image = { connect: { id: cover_image } };
+      updatedContent.cover_image = { connect: { url: cover_image } };
     } else {
       updatedContent.cover_image = { disconnect: true }; // remove if null
     }

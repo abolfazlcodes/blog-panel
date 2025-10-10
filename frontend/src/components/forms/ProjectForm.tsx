@@ -10,12 +10,13 @@ import { ClipLoader } from "react-spinners";
 import TextFieldController from "../common/text-field/TextFieldController";
 import { HelperText } from "../common/HelperText";
 import ToggleButtonController from "../common/Toggle/toggle-button-controller";
-import BlogTextEditor from "../common/BlogTextEditor";
+import BlogTextEditor, { MAX_FILE_SIZE } from "../common/BlogTextEditor";
 import { useCreateProject } from "@/services/projects/create-project";
 import { useUpdateProject } from "@/services/projects/update-project";
 import toast from "react-hot-toast";
 import { queryClient } from "@/providers/QueryClientProvider";
 import { usePublishProject } from "@/services/projects/publish-project";
+import CoverUploaderController from "../common/Uploader/CoverUploaderController";
 
 interface IProjectFormComponentProps {
   defaultValues?: IProjectFormDefaultValues;
@@ -236,6 +237,13 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
               label={""}
             />
           </div>
+
+          <CoverUploaderController
+            control={control}
+            name="cover_image"
+            maxFileSize={MAX_FILE_SIZE * 1024 * 1024} // 10MB
+            allowedFormats={["image/jpeg", "image/png", "image/webp"]}
+          />
 
           <Controller
             name="content"
