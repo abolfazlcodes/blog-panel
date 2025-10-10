@@ -11,7 +11,7 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
 }) => {
   return (
     <article className="group hover:shadow-drop-down transition-all duration-300 hover:-translate-y-2 w-full bg-white rounded-lg shadow-card overflow-hidden p-6">
-      <a href={`/update-blog/${id}`} className="flex flex-col gap-y-8">
+      <a href={`/update-project/${id}`} className="flex flex-col gap-y-8">
         <figure className="relative">
           <img
             src={
