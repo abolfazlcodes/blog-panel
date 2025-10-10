@@ -20,3 +20,14 @@ declare type TResponseArr<T> = {
   message: string;
   data: T[];
 };
+
+declare type TMediaFile = {
+  id: number;
+  created_at: string;
+  filename: string;
+  hash: string;
+  mime_type: string;
+  size: number;
+  url: string;
+  userId: number;
+};

@@ -26,7 +26,7 @@ import "@/components/tiptap-node/image-node/image-node.scss";
 import "@/components/tiptap-node/heading-node/heading-node.scss";
 import "@/components/tiptap-node/paragraph-node/paragraph-node.scss";
 
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface IBlogTextEditorProps {
   content: string;
@@ -80,7 +80,7 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,
-        limit: 3,
+        limit: 10,
         upload: handleImageUpload,
         onError: (error) => console.log("upload failed:", error),
       }),
@@ -109,7 +109,7 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
   }, [editor, content]);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full border border-divider rounded-lg">
       <div className="simple-editor-wrapper !my-4">
         <EditorContext.Provider value={{ editor }}>
           <Toolbar
