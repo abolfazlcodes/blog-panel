@@ -9,7 +9,6 @@ import MobileToolbarContent from "./MobileToolbarContent";
 import StarterKit from "@tiptap/starter-kit";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import TextAlign from "@tiptap/extension-text-align";
-import { TaskItem, TaskList } from "@tiptap/extension-list";
 import Highlight from "@tiptap/extension-highlight";
 import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
@@ -67,10 +66,6 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
       HorizontalRule,
       TextAlign.configure({
         types: ["heading", "paragraph"],
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true,
       }),
       Highlight.configure({ multicolor: true }),
       Image,
