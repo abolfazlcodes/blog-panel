@@ -5,6 +5,8 @@ import prisma from "../prisma.js";
 
 import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
+import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
+import { deleteMediaFileById } from "./media-file.js";
 
 export const getAllProjectsHandler = async (
   req: Request,
@@ -142,12 +144,14 @@ export const createProjectHandler = async (
       throw error;
     }
 
+    const sanitizedContent = sanitizeRichTextContent(content);
+
     const newProject = {
       title,
       slug,
       short_description,
       description,
-      content,
+      content: sanitizedContent,
       is_featured,
       is_draft: true,
       published_at: new Date().toISOString(),
@@ -209,11 +213,14 @@ export const updateProjectHandler = async (
       throw error;
     }
 
+    const sanitizedContent = sanitizeRichTextContent(content);
+    const oldCoverImageId = projectDoc.cover_imageId;
+
     const updatedContent = {
       title,
       short_description,
       description,
-      content,
+      content: sanitizedContent,
       cover_image,
       is_featured,
       updated_at: new Date(),
@@ -225,7 +232,7 @@ export const updateProjectHandler = async (
       updatedContent.cover_image = { disconnect: true }; // remove if null
     }
 
-    const updatedBlog = await prisma.project.update({
+    const updatedProject = await prisma.project.update({
       where: {
         id: +projectId,
       },
@@ -233,7 +240,12 @@ export const updateProjectHandler = async (
       include: { cover_image: true },
     });
 
-    if (!updatedBlog) {
+    // cleanup: remove old cover if replaced
+    if (oldCoverImageId && oldCoverImageId !== updatedProject.cover_imageId) {
+      await deleteMediaFileById(oldCoverImageId);
+    }
+
+    if (!updatedProject) {
       const error = new CustomError("Could not update project");
       error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
       throw error;
@@ -333,6 +345,8 @@ export const deleteProjectHandler = async (
       throw error;
     }
 
+    const coverImageId = projectDoc.cover_imageId;
+
     // delete the project
     await prisma.project.delete({
       where: {
@@ -340,6 +354,11 @@ export const deleteProjectHandler = async (
         userId: userId,
       },
     });
+
+    // After deletion, check if the file is used elsewhere
+    if (coverImageId) {
+      await deleteMediaFileById(coverImageId);
+    }
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "Document was deleted successfully",

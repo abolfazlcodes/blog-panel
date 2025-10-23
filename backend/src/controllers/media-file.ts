@@ -60,3 +60,42 @@ export const uploadFileHandler = async (
     next(err);
   }
 };
+
+/**
+ * Deletes a media file from both disk and DB
+ * if it exists and is not used by any other model.
+ */
+export const deleteMediaFileById = async (fileId: number) => {
+  if (!fileId) return;
+
+  // Check if still used elsewhere
+  const isStillUsed =
+    (await prisma.blog.findFirst({
+      where: { cover_imageId: fileId },
+      select: { id: true },
+    })) ||
+    (await prisma.project.findFirst({
+      where: { cover_imageId: fileId },
+      select: { id: true },
+    }));
+
+  if (isStillUsed) return; // skip deletion
+
+  const file = await prisma.mediaFile.findUnique({
+    where: { id: fileId },
+  });
+
+  if (!file) return;
+
+  // Extract filename from URL
+  const fileName = path.basename(file.url);
+  const filePath = path.join(uploadDir, fileName);
+
+  // Delete from disk
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+
+  // Delete from DB
+  await prisma.mediaFile.delete({ where: { id: fileId } });
+};

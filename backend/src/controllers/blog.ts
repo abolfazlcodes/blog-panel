@@ -6,6 +6,8 @@ import prisma from "../prisma.js";
 import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import { extractPlainText } from "../utils/index.js";
+import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
+import { deleteMediaFileById } from "./media-file.js";
 
 export const getAllBlogsHandler = async (
   req: Request,
@@ -148,13 +150,15 @@ export const createBlogHandler = async (
     const plainText = extractPlainText(content);
     const stats = readingTime(plainText);
 
+    const sanitizedContent = sanitizeRichTextContent(content);
+
     // create blog content
     const newBlog = {
       title,
       slug,
       short_description,
       description,
-      content,
+      content: sanitizedContent,
       is_featured,
       views_count: 0,
       likes_count: 0,
@@ -225,11 +229,14 @@ export const updateBlogHandler = async (
       reading_time = readingTime(plainText).minutes;
     }
 
+    const sanitizedContent = sanitizeRichTextContent(content);
+    const oldCoverImageId = blog.cover_imageId;
+
     const updatedContent = {
       title,
       short_description,
       description,
-      content,
+      content: sanitizedContent,
       cover_image,
       reading_time,
       is_featured,
@@ -247,6 +254,11 @@ export const updateBlogHandler = async (
       data: updatedContent,
       include: { cover_image: true },
     });
+
+    // cleanup: remove old cover if replaced
+    if (oldCoverImageId && oldCoverImageId !== updatedBlog.cover_imageId) {
+      await deleteMediaFileById(oldCoverImageId);
+    }
 
     if (!updatedBlog) {
       const error = new CustomError("Could not update blog");
@@ -348,6 +360,8 @@ export const deleteBlogHandler = async (
       throw error;
     }
 
+    const coverImageId = blog.cover_imageId;
+
     // delete the blog
     await prisma.blog.delete({
       where: {
@@ -355,6 +369,11 @@ export const deleteBlogHandler = async (
         userId: userId,
       },
     });
+
+    // After deletion, check if the file is used elsewhere
+    if (coverImageId) {
+      await deleteMediaFileById(coverImageId);
+    }
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "Blog was deleted successfully",
