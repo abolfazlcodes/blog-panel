@@ -8,6 +8,8 @@ import {
 import TextFieldController from "../common/text-field/TextFieldController";
 import { Button } from "../common/Button";
 import { useLoginHandler } from "@/services/authentication/useLogin";
+import { useState } from "react";
+import PasswordHidden from "../common/text-field/PasswordHidden";
 
 const AuthLoginForm = () => {
   const { handleSubmit, control } = useForm<TLoginForm>({
@@ -17,6 +19,7 @@ const AuthLoginForm = () => {
       password: "",
     },
   });
+  const [isPassHidden, setIsPassHidden] = useState<boolean>(true);
 
   const { isLoggingIn, loginHandler } = useLoginHandler();
 
@@ -45,10 +48,16 @@ const AuthLoginForm = () => {
         <TextFieldController
           control={control}
           name="password"
-          type="password"
+          type={isPassHidden ? "password" : "text"}
           placeholder="password"
           dir="ltr"
           variant="outlined"
+          endAdornment={
+            <PasswordHidden
+              isHidden={isPassHidden}
+              onToggle={() => setIsPassHidden(!isPassHidden)}
+            />
+          }
         />
       </div>
 

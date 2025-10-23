@@ -236,7 +236,7 @@ export default function TextField({
           placeholder=" "
           className={customTwMerge(
             inputBaseClasses(size, variant),
-            "placeholder:text-disabled text-field-input disabled:bg-disabled/30 peer-focus:placeholder-transparent peer-[:not(:placeholder-shown)]:placeholder-transparent",
+            "placeholder:text-disabled text-field-input disabled:bg-disabled/30 peer-focus:placeholder-transparent peer-[:not(:placeholder-shown)]:placeholder-transparent text-d-body2",
             inputClassName
           )}
           aria-invalid={error || undefined}

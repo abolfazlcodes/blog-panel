@@ -1,5 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
+import rateLimit from "express-rate-limit";
 
 import { errorValidator } from "../middlewares/validator.js";
 import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
@@ -18,11 +19,21 @@ import {
 
 const router = express.Router();
 
+const blogLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, // 5 login attempts
+  message: {
+    message: "Too many login attempts. Please try again later.",
+  },
+});
+
 router.get("/blog", isAuthenticatedValidator, getAllBlogsHandler);
 router.get("/blog/:id", isAuthenticatedValidator, getSingleBlogHandler);
 
 router.post(
   "/blog",
+  blogLimiter,
+  isAuthenticatedValidator,
   [
     body("title")
       .trim()
@@ -49,13 +60,14 @@ router.post(
       })
       .withMessage("description should be at least 10 characters"),
   ],
-  isAuthenticatedValidator,
   errorValidator,
   createBlogHandler
 );
 
 router.put(
   "/blog/:id",
+  blogLimiter,
+  isAuthenticatedValidator,
   [
     body("title")
       .trim()
@@ -82,13 +94,18 @@ router.put(
       })
       .withMessage("description should be at least 10 characters"),
   ],
-  isAuthenticatedValidator,
+
   errorValidator,
   updateBlogHandler
 );
 
 router.patch("/blog/:id", isAuthenticatedValidator, publishBlogHandler);
-router.delete("/blog/:id", isAuthenticatedValidator, deleteBlogHandler);
+router.delete(
+  "/blog/:id",
+  blogLimiter,
+  isAuthenticatedValidator,
+  deleteBlogHandler
+);
 
 // public api routes:
 router.get("/public/:username/blog", getPublishedBlogsHandler);

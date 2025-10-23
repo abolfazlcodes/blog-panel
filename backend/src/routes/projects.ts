@@ -1,5 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
+import rateLimit from "express-rate-limit";
 
 import { errorValidator } from "../middlewares/validator.js";
 import { isAuthenticatedValidator } from "../middlewares/isAuth.js";
@@ -17,11 +18,20 @@ import {
 
 const router = express.Router();
 
+const projectLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, // 5 login attempts
+  message: {
+    message: "Too many login attempts. Please try again later.",
+  },
+});
+
 router.get("/project", isAuthenticatedValidator, getAllProjectsHandler);
 router.get("/project/:id", isAuthenticatedValidator, getSingleProjectHandler);
 
 router.post(
   "/project",
+  projectLimiter,
   isAuthenticatedValidator,
   [
     body("title")
@@ -55,6 +65,7 @@ router.post(
 
 router.put(
   "/project/:id",
+  projectLimiter,
   isAuthenticatedValidator,
   [
     body("title")
@@ -87,7 +98,12 @@ router.put(
 );
 
 router.patch("/project/:id", isAuthenticatedValidator, publishProjectHandler);
-router.delete("/project/:id", isAuthenticatedValidator, deleteProjectHandler);
+router.delete(
+  "/project/:id",
+  projectLimiter,
+  isAuthenticatedValidator,
+  deleteProjectHandler
+);
 
 // public api routes:
 router.get("/public/:username/project", getPublishedProjectHandler);

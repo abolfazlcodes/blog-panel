@@ -28,10 +28,10 @@ const MobileSidebar: React.FC<IMobileSidebarProps> = ({ isOpen, onClose }) => {
           },
         }}
         transition={{
-          duration: 0.5,
+          duration: 0.4,
         }}
         ref={ref}
-        className={`bg-gray-200 border-l-divider fixed top-0 z-[101] flex h-dvh w-full max-w-[280px] flex-col border-l border-dashed px-4 pt-3 pb-10 transition-all duration-1000 ease-in 2xl:relative 2xl:row-span-2 lg:hidden`}
+        className={`bg-gray-200 border-l-divider fixed top-0 z-[101] flex h-dvh w-full max-w-[280px] flex-col border-l border-dashed px-4 pt-3 pb-10 transition-all duration-500 ease-linear 2xl:relative 2xl:row-span-2 lg:hidden`}
       >
         <div className="flex w-full items-center justify-center px-4 pt-3 pb-1">
           <BurgerBtn isOpen={isOpen} onClick={onClose} className="mr-auto" />
@@ -58,8 +58,8 @@ const MobileSidebar: React.FC<IMobileSidebarProps> = ({ isOpen, onClose }) => {
                   initial="close"
                   exit="close"
                   transition={{
-                    duration: 0.3,
-                    delay: (idx + 1) * 0.1,
+                    duration: 0.5,
+                    delay: (idx + 1) * 0.2,
                   }}
                   variants={{
                     open: {

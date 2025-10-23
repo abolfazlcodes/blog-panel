@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import rateLimit from "express-rate-limit";
 
 import { router as authRouter } from "./src/routes/auth.js";
 import { router as blogRouter } from "./src/routes/blog.js";
@@ -20,6 +21,18 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each ip to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many requests from this IP, please try again later.",
+  },
+});
+
+app.use(globalLimiter);
 
 app.use(
   cors({

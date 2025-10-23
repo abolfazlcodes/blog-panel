@@ -6,17 +6,14 @@
 
     &.medium {
       @apply h-7 w-12;
-      /* سایز متوسط */
     }
 
     &.small {
       @apply h-6 w-10;
-      /* سایز کوچک */
     }
 
     &.toggle-disabled {
       @apply cursor-not-allowed opacity-50;
-      /* استایل غیرفعال */
     }
 
     .toggle-bg {
@@ -28,12 +25,10 @@
 
       &.medium {
         @apply h-5 w-5;
-        /* ابعاد گوی برای سایز متوسط */
       }
 
       &.small {
         @apply h-4 w-4;
-        /* ابعاد گوی برای سایز کوچک */
       }
     }
   }
