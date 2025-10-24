@@ -37,3 +37,4 @@ export interface IBlogFormDefaultValues extends IBlogFormProps {
 export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
 export type TBlogsDataResponseProps = TResponseArr<IBlogsCardProps>;
 export type TCreateBlogResponseProps = TResponse<object>;
+export type TDeleteBlogResponseProps = TResponse<object>;

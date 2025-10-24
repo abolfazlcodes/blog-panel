@@ -17,6 +17,7 @@ import { ClipLoader } from "react-spinners";
 import { HelperText } from "../common/HelperText";
 import ToggleButtonController from "../common/Toggle/toggle-button-controller";
 import CoverUploaderController from "../common/Uploader/CoverUploaderController";
+import { useDeleteBlog } from "@/services/blog/delete-blog";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -44,6 +45,7 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
   const publishBlogMutation = usePublishBlog();
+  const deleteBlogMutation = useDeleteBlog();
 
   const handleBlogSubmit = (values: IBlogFormProps) => {
     if (defaultValues) {
@@ -117,6 +119,27 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
     }
   };
 
+  const deleteBlogHandler = () => {
+    if (defaultValues) {
+      deleteBlogMutation.mutate(
+        {
+          id: defaultValues.id,
+        },
+        {
+          onSuccess: (response) => {
+            toast.success(response?.data?.message);
+            navigate("/");
+            queryClient.refetchQueries({ queryKey: ["blogs"], exact: false });
+            reset();
+          },
+          onError: (error) => {
+            toast.error(error?.message);
+          },
+        }
+      );
+    }
+  };
+
   useEffect(() => {
     const saveDocHandler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -147,6 +170,21 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
   return (
     <>
       <header className="flex items-center mb-3 gap-2 justify-end">
+        {defaultValues && (
+          <Button
+            colorType="error"
+            variant="outlined"
+            disabled={!defaultValues?.is_draft}
+            onClick={deleteBlogHandler}
+          >
+            {deleteBlogMutation?.isDeleting ? (
+              <ClipLoader size={10} />
+            ) : (
+              "Delete"
+            )}
+          </Button>
+        )}
+
         <Button
           size="sm"
           type="submit"

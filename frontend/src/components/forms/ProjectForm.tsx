@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { queryClient } from "@/providers/QueryClientProvider";
 import { usePublishProject } from "@/services/projects/publish-project";
 import CoverUploaderController from "../common/Uploader/CoverUploaderController";
+import { useDeleteProject } from "@/services/projects/delete-project";
 
 interface IProjectFormComponentProps {
   defaultValues?: IProjectFormDefaultValues;
@@ -46,6 +47,7 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
   const createProjectMutation = useCreateProject();
   const updateProjectMutation = useUpdateProject();
   const publishProjectMutation = usePublishProject();
+  const deleteProjectMutation = useDeleteProject();
 
   const handleProjectSubmit = (values: IProjectFormProps) => {
     if (defaultValues) {
@@ -126,6 +128,30 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
     }
   };
 
+  const deleteProjectHandler = () => {
+    if (defaultValues) {
+      deleteProjectMutation.mutate(
+        {
+          id: defaultValues.id,
+        },
+        {
+          onSuccess: (response) => {
+            toast.success(response?.data?.message);
+            navigate("/");
+            queryClient.refetchQueries({
+              queryKey: ["projects"],
+              exact: false,
+            });
+            reset();
+          },
+          onError: (error) => {
+            toast.error(error?.message);
+          },
+        }
+      );
+    }
+  };
+
   useEffect(() => {
     const saveDocHandler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
@@ -158,6 +184,21 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
   return (
     <>
       <header className="flex items-center mb-3 gap-2 justify-end">
+        {defaultValues && (
+          <Button
+            colorType="error"
+            variant="outlined"
+            disabled={!defaultValues?.is_draft}
+            onClick={deleteProjectHandler}
+          >
+            {deleteProjectMutation?.isDeleting ? (
+              <ClipLoader size={10} />
+            ) : (
+              "Delete"
+            )}
+          </Button>
+        )}
+
         <Button
           size="sm"
           type="submit"
