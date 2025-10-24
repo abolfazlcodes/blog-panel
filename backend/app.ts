@@ -32,8 +32,6 @@ const globalLimiter = rateLimit({
   },
 });
 
-app.use(globalLimiter);
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -46,6 +44,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.use(globalLimiter);
 
 app.use(express.json());
 
