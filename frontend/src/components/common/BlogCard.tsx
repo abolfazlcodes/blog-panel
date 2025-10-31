@@ -20,10 +20,7 @@ const BlogCard: React.FC<IBlogsCardProps> = ({
       <a href={`/update-blog/${id}`} className="flex flex-col gap-y-8">
         <figure className="relative">
           <img
-            src={
-              cover_image ||
-              "https://plus.unsplash.com/premium_photo-1663040543387-cb7c78c4f012?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            }
+            src={cover_image || "/image-placeholder.jpg"}
             className="relative border-none outline-none rounded-lg object-cover object-center h-56 w-full z-10"
           />
 

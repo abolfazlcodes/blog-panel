@@ -31,7 +31,7 @@ export const isAuthenticatedValidator = (
     decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY!);
   } catch (error) {
     const err = new CustomError("Could not verify user. Not authorized");
-    err.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
+    err.statusCode = HTTP_STATUS_CODES.StatusUnauthorized;
     throw err;
   }
 

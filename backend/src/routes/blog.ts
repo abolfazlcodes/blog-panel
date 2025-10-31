@@ -21,7 +21,7 @@ const router = express.Router();
 
 const blogLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, // 5 login attempts
+  max: 20, // 20 login attempts
   message: {
     message: "Too many login attempts. Please try again later.",
   },

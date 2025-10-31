@@ -1,3 +1,4 @@
+import Document from "@tiptap/extension-document";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
 import { Toolbar } from "../tiptap-ui-primitive/toolbar";
 import { useEffect, useRef, useState } from "react";
@@ -56,6 +57,9 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
       },
     },
     extensions: [
+      Document.extend({
+        content: "block+",
+      }),
       StarterKit.configure({
         horizontalRule: false,
         link: {
