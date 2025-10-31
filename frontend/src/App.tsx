@@ -35,7 +35,14 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<HomePage />} />
+            <Route
+              index
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/blogs" element={<BlogPage />} />
             <Route path="/add-blog" element={<AddBlogPagePage />} />
             <Route path="/update-blog/:id" element={<UpdateBlogPage />} />

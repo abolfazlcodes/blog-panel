@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import rateLimit from "express-rate-limit";
+// import rateLimit from "express-rate-limit";
 
 import { router as authRouter } from "./src/routes/auth.js";
 import { router as blogRouter } from "./src/routes/blog.js";
@@ -22,15 +22,15 @@ dotenv.config();
 
 const app = express();
 
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each ip to 100 requests per window
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    message: "Too many requests from this IP, please try again later.",
-  },
-});
+// const globalLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // limit each ip to 100 requests per window
+//   standardHeaders: true,
+//   legacyHeaders: false,
+//   message: {
+//     message: "Too many requests from this IP, please try again later.",
+//   },
+// });
 
 app.use(
   cors({
@@ -45,7 +45,7 @@ app.use(
   })
 );
 
-app.use(globalLimiter);
+// app.use(globalLimiter);
 
 app.use(express.json());
 
@@ -78,7 +78,7 @@ app.use(
   }
 );
 
-const PORT = Number(process.env.PORT) || 4000;
+const PORT = Number(process.env.PORT) || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend running on http://0.0.0.0:${PORT}`);
