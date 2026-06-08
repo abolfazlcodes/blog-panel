@@ -30,6 +30,6 @@ export interface IProjectFormDefaultValues extends IProjectFormProps {
 }
 
 // export type TSingleBlogDataResponseProps = TResponse<ISingleBlogData>;
-export type TProjectsDataResponseProps = TResponseArr<IProjectCardProps>;
+export type TProjectsDataResponseProps = TPaginatedResponse<IProjectCardProps>;
 export type TCreateProjectResponseProps = TResponse<object>;
 export type TDeleteProjectResponseProps = TResponse<object>;

@@ -21,6 +21,19 @@ declare type TResponseArr<T> = {
   data: T[];
 };
 
+declare interface IPaginationMeta {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+declare type TPaginatedResponse<T> = {
+  message: string;
+  data: T[];
+  meta: IPaginationMeta;
+};
+
 declare type TMediaFile = {
   id: number;
   created_at: string;
