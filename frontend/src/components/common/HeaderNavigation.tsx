@@ -2,7 +2,7 @@
 import { NavLink, useNavigate } from "react-router";
 import { Button } from "./Button";
 import { useGetProfile } from "@/services/user-profile";
-import Cookies from "js-cookie";
+import { logout } from "@/core/http-service";
 import { useState } from "react";
 import BurgerBtn from "./BurgerBtn";
 import MobileSidebar from "./MobileSidebar";
@@ -16,8 +16,8 @@ const HeaderNavigation = () => {
 
   const { userInfo } = useGetProfile();
 
-  const handleLogOutUser = () => {
-    Cookies.remove("auth_token");
+  const handleLogOutUser = async () => {
+    await logout();
     navigate("/login");
   };
 

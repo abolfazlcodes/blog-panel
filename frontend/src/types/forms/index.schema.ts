@@ -26,3 +26,17 @@ export const PASSWORD_FIELD = z
     message: VALIDATION_MESSAGES.password.maximum,
   })
   .nonempty(VALIDATION_MESSAGES.password.required);
+
+// Signup password: mirrors the backend's strength rules.
+export const STRONG_PASSWORD_FIELD = PASSWORD_FIELD.regex(/[A-Z]/, {
+  message: "Password must contain at least one capital letter",
+})
+  .regex(/\d/, { message: "Password must contain at least one number" })
+  .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+    message: "Password must contain at least one special character",
+  });
+
+export const NAME_FIELD = z
+  .string({ message: "This field is required" })
+  .trim()
+  .min(3, { message: "Must be at least 3 characters" });

@@ -1,5 +1,4 @@
-import Cookies from "js-cookie";
-import { createData } from "@/core/http-service";
+import { createData, setAuthTokens, type AuthTokens } from "@/core/http-service";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -9,10 +8,8 @@ interface ILoginCredentialsProps {
   password: string;
 }
 
-interface ILoginResponseProps {
+interface ILoginResponseProps extends AuthTokens {
   message: string;
-  token: string;
-  expiresAt: string;
 }
 
 const loginHandler = async (data: ILoginCredentialsProps) => {
@@ -29,9 +26,7 @@ export const useLoginHandler = () => {
     onSuccess: (response) => {
       if (response?.data?.token) {
         toast.success(response?.data?.message);
-        Cookies.set("auth_token", response?.data?.token, {
-          expires: new Date(response?.data?.expiresAt),
-        });
+        setAuthTokens(response.data);
 
         // redirect the user
         navigate("/", {
