@@ -15,9 +15,12 @@ import Image from "@tiptap/extension-image";
 import Typography from "@tiptap/extension-typography";
 import Superscript from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { common, createLowlight } from "lowlight";
 import { ImageUploadNode } from "../tiptap-node/image-upload-node";
 import { handleImageUpload } from "@/lib/tiptap-utils";
 
+import "highlight.js/styles/atom-one-dark.css";
 import "@/components/tiptap-node/blockquote-node/blockquote-node.scss";
 import "@/components/tiptap-node/code-block-node/code-block-node.scss";
 import "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss";
@@ -27,6 +30,9 @@ import "@/components/tiptap-node/heading-node/heading-node.scss";
 import "@/components/tiptap-node/paragraph-node/paragraph-node.scss";
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+// Shared lowlight instance (common ~35 languages) powering highlighted code blocks.
+const lowlight = createLowlight(common);
 
 interface IBlogTextEditorProps {
   content: string;
@@ -62,11 +68,14 @@ const BlogTextEditor: React.FC<IBlogTextEditorProps> = ({
       }),
       StarterKit.configure({
         horizontalRule: false,
+        // Replaced by CodeBlockLowlight below for syntax highlighting + language.
+        codeBlock: false,
         link: {
           openOnClick: false,
           enableClickSelection: true,
         },
       }),
+      CodeBlockLowlight.configure({ lowlight }),
       HorizontalRule,
       TextAlign.configure({
         types: ["heading", "paragraph"],
