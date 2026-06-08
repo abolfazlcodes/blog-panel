@@ -22,11 +22,16 @@ export const SIDEBAR_LINKS: ISidebarLinkProp[] = [
   },
   {
     id: 4,
+    title: "Series",
+    href: "/series",
+  },
+  {
+    id: 5,
     title: "Projects",
     href: "/projects",
   },
   {
-    id: 5,
+    id: 6,
     title: "Add Project",
     href: "/add-project",
   },

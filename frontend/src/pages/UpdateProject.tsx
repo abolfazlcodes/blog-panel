@@ -37,6 +37,7 @@ const UpdateProject = () => {
             title: projectData?.title,
             is_draft: projectData?.is_draft,
             is_featured: projectData?.is_featured,
+            tags: projectData?.tags ?? [],
           }}
         />
       </main>

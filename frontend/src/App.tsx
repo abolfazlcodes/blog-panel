@@ -15,6 +15,7 @@ const UpdateBlogPage = lazy(() => import("./pages/UpdateBlog"));
 const ProjectPage = lazy(() => import("./pages/Projects"));
 const AddProjectPage = lazy(() => import("./pages/AddProject"));
 const UpdateProjectPage = lazy(() => import("./pages/UpdateProject"));
+const SeriesPage = lazy(() => import("./pages/Series"));
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="/projects" element={<ProjectPage />} />
             <Route path="/add-project" element={<AddProjectPage />} />
             <Route path="/update-project/:id" element={<UpdateProjectPage />} />
+            <Route path="/series" element={<SeriesPage />} />
           </Route>
         </Routes>
 

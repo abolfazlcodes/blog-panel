@@ -1,3 +1,5 @@
+import type { ISeriesSummary } from "./series.types";
+
 export interface IBlogsCardProps {
   id: number;
   title: string;
@@ -13,10 +15,14 @@ export interface IBlogsCardProps {
   is_draft: true;
   reading_time: number;
   is_featured: boolean;
+  series?: ISeriesSummary | null;
+  series_order?: number | null;
+  tags?: string[];
 }
 
 export interface ISingleBlogData extends IBlogsCardProps {
   content: string;
+  seriesId?: number | null;
 }
 
 export interface IBlogFormProps {
@@ -26,6 +32,10 @@ export interface IBlogFormProps {
   content: string;
   cover_image: string;
   is_featured: boolean;
+  // "" = no series; otherwise the numeric series id as a string (native <select>)
+  seriesId: string;
+  series_order: number | null;
+  tags: string[];
 }
 
 export interface IBlogFormDefaultValues extends IBlogFormProps {

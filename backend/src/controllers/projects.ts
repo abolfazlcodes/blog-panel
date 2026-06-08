@@ -7,6 +7,7 @@ import CustomError from "../utils/customError.js";
 import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
 import { deleteMediaFileById } from "./media-file.js";
+import { resolveTagConnections } from "./tags.js";
 
 export const getAllProjectsHandler = async (
   req: Request,
@@ -21,7 +22,10 @@ export const getAllProjectsHandler = async (
       where: {
         userId: userId,
       },
-      include: { cover_image: true },
+      include: {
+        cover_image: true,
+        tags: { select: { name: true } },
+      },
     });
 
     if (!allProjects) {
@@ -41,6 +45,7 @@ export const getAllProjectsHandler = async (
       updated_at: item?.updated_at,
       published_at: item?.published_at,
       is_featured: item?.is_featured,
+      tags: item?.tags.map((tag) => tag.name),
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -68,7 +73,10 @@ export const getSingleProjectHandler = async (
         id: +projectId,
         userId: userId,
       },
-      include: { cover_image: true },
+      include: {
+        cover_image: true,
+        tags: { select: { name: true } },
+      },
     });
 
     if (!projectDoc) {
@@ -89,6 +97,7 @@ export const getSingleProjectHandler = async (
       published_at: projectDoc?.published_at,
       is_draft: projectDoc?.is_draft,
       is_featured: projectDoc?.is_featured,
+      tags: projectDoc?.tags.map((tag) => tag.name),
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -114,6 +123,7 @@ export const createProjectHandler = async (
     content,
     cover_image,
     is_featured,
+    tags,
   } = req.body;
 
   try {
@@ -145,6 +155,7 @@ export const createProjectHandler = async (
     }
 
     const sanitizedContent = sanitizeRichTextContent(content);
+    const tagConnections = await resolveTagConnections(userId, tags);
 
     const newProject = {
       title,
@@ -158,6 +169,7 @@ export const createProjectHandler = async (
       updated_at: new Date().toISOString(),
       user: { connect: { id: userId } },
       cover_image: cover_image ? { connect: { url: cover_image } } : undefined,
+      tags: tagConnections.length ? { connect: tagConnections } : undefined,
     };
 
     const result = await prisma.project.create({
@@ -196,6 +208,7 @@ export const updateProjectHandler = async (
     content,
     cover_image,
     is_featured,
+    tags,
   } = req.body;
 
   try {
@@ -215,6 +228,7 @@ export const updateProjectHandler = async (
 
     const sanitizedContent = sanitizeRichTextContent(content);
     const oldCoverImageId = projectDoc.cover_imageId;
+    const tagConnections = await resolveTagConnections(userId, tags);
 
     const updatedContent = {
       title,
@@ -224,6 +238,8 @@ export const updateProjectHandler = async (
       cover_image,
       is_featured,
       updated_at: new Date(),
+      // `set` replaces the full tag list; an empty array clears all tags
+      tags: { set: tagConnections },
     };
 
     if (cover_image) {
@@ -376,6 +392,8 @@ export const getPublishedProjectHandler = async (
   next: NextFunction
 ) => {
   const username = req.params.username;
+  const tagSlug =
+    typeof req.query.tag === "string" ? req.query.tag : undefined;
 
   try {
     const allPublishedProjects = await prisma.project.findMany({
@@ -384,9 +402,13 @@ export const getPublishedProjectHandler = async (
         user: {
           username,
         },
+        // optional tag filter: /public/:username/project?tag=react
+        ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
       },
+      orderBy: { published_at: "desc" },
       include: {
         cover_image: true,
+        tags: { select: { name: true, slug: true } },
         user: true,
       },
     });
@@ -408,6 +430,7 @@ export const getPublishedProjectHandler = async (
       updated_at: item.updated_at,
       published_at: item.published_at,
       is_draft: item.is_draft,
+      tags: item.tags,
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -434,7 +457,11 @@ export const getPublishedSingleProjectHandler = async (
         is_draft: false,
         user: { username },
       },
-      include: { cover_image: true, user: true },
+      include: {
+        cover_image: true,
+        tags: { select: { name: true, slug: true } },
+        user: true,
+      },
     });
 
     if (!projectDoc) {
@@ -454,6 +481,7 @@ export const getPublishedSingleProjectHandler = async (
       updated_at: projectDoc.updated_at,
       published_at: projectDoc.published_at,
       is_draft: projectDoc.is_draft,
+      tags: projectDoc.tags,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
