@@ -8,6 +8,45 @@ import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import { extractPlainText } from "../utils/index.js";
 import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
 import { deleteMediaFileById } from "./media-file.js";
+import { resolveTagConnections } from "./tags.js";
+import { buildSeriesContext } from "./series.js";
+
+// Validate that a series (when provided) belongs to the user, and normalize the
+// order. Returns the numeric id to connect (or null to detach) plus the order.
+async function resolveSeriesSelection(
+  userId: number,
+  seriesId: unknown,
+  seriesOrder: unknown
+): Promise<{ seriesId: number | null; series_order: number | null }> {
+  if (seriesId === undefined || seriesId === null || seriesId === "") {
+    return { seriesId: null, series_order: null };
+  }
+
+  const id = Number(seriesId);
+  if (!Number.isInteger(id)) {
+    const error = new CustomError("Invalid series selected.");
+    error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
+    throw error;
+  }
+
+  const series = await prisma.series.findFirst({ where: { id, userId } });
+  if (!series) {
+    const error = new CustomError("Selected series was not found.");
+    error.statusCode = HTTP_STATUS_CODES.StatusBadRequest;
+    throw error;
+  }
+
+  const orderNum = Number(seriesOrder);
+  const series_order =
+    seriesOrder === undefined ||
+    seriesOrder === null ||
+    seriesOrder === "" ||
+    Number.isNaN(orderNum)
+      ? null
+      : orderNum;
+
+  return { seriesId: id, series_order };
+}
 
 export const getAllBlogsHandler = async (
   req: Request,
@@ -20,7 +59,11 @@ export const getAllBlogsHandler = async (
   try {
     const allBlogs = await prisma.blog.findMany({
       where: { userId: userId },
-      include: { cover_image: true }, // include relation
+      include: {
+        cover_image: true, // include relation
+        series: { select: { id: true, title: true, slug: true } },
+        tags: { select: { name: true } },
+      },
     });
 
     if (!allBlogs) {
@@ -44,6 +87,9 @@ export const getAllBlogsHandler = async (
       is_draft: blogItem?.is_draft,
       reading_time: blogItem?.reading_time,
       is_featured: blogItem?.is_featured,
+      series: blogItem?.series || null,
+      series_order: blogItem?.series_order,
+      tags: blogItem?.tags.map((tag) => tag.name),
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -68,7 +114,11 @@ export const getSingleBlogHandler = async (
     // check if the blog with that id exists
     const blogDoc = await prisma.blog.findUnique({
       where: { id: blogId, userId },
-      include: { cover_image: true },
+      include: {
+        cover_image: true,
+        series: { select: { id: true, title: true, slug: true } },
+        tags: { select: { name: true } },
+      },
     });
 
     if (!blogDoc) {
@@ -91,6 +141,10 @@ export const getSingleBlogHandler = async (
       views_count: blogDoc?.views_count,
       likes_count: blogDoc?.likes_count,
       is_featured: blogDoc?.is_featured,
+      seriesId: blogDoc?.seriesId,
+      series: blogDoc?.series || null,
+      series_order: blogDoc?.series_order,
+      tags: blogDoc?.tags.map((tag) => tag.name),
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -116,6 +170,7 @@ export const createBlogHandler = async (
     cover_image,
     content,
     is_featured,
+    tags,
   } = req.body;
 
   try {
@@ -152,6 +207,13 @@ export const createBlogHandler = async (
 
     const sanitizedContent = sanitizeRichTextContent(content);
 
+    const selection = await resolveSeriesSelection(
+      userId,
+      req.body.seriesId,
+      req.body.series_order
+    );
+    const tagConnections = await resolveTagConnections(userId, tags);
+
     // create blog content
     const newBlog = {
       title,
@@ -164,10 +226,15 @@ export const createBlogHandler = async (
       likes_count: 0,
       is_draft: true,
       reading_time: stats?.minutes,
+      series_order: selection.series_order,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       user: { connect: { id: userId } },
       cover_image: cover_image ? { connect: { url: cover_image } } : undefined,
+      series: selection.seriesId
+        ? { connect: { id: selection.seriesId } }
+        : undefined,
+      tags: tagConnections.length ? { connect: tagConnections } : undefined,
     };
 
     const result = await prisma.blog.create({
@@ -206,6 +273,7 @@ export const updateBlogHandler = async (
     cover_image,
     content,
     is_featured,
+    tags,
   } = req.body;
 
   try {
@@ -232,6 +300,13 @@ export const updateBlogHandler = async (
     const sanitizedContent = sanitizeRichTextContent(content);
     const oldCoverImageId = blog.cover_imageId;
 
+    const selection = await resolveSeriesSelection(
+      userId,
+      req.body.seriesId,
+      req.body.series_order
+    );
+    const tagConnections = await resolveTagConnections(userId, tags);
+
     const updatedContent = {
       title,
       short_description,
@@ -240,7 +315,14 @@ export const updateBlogHandler = async (
       cover_image,
       reading_time,
       is_featured,
+      series_order: selection.series_order,
       updated_at: new Date(),
+      // connect to the chosen series, or detach if none was selected
+      series: selection.seriesId
+        ? { connect: { id: selection.seriesId } }
+        : { disconnect: true },
+      // `set` replaces the full tag list; an empty array clears all tags
+      tags: { set: tagConnections },
     };
 
     if (cover_image) {
@@ -391,6 +473,8 @@ export const getPublishedBlogsHandler = async (
   next: NextFunction
 ) => {
   const username = req.params.username;
+  const tagSlug =
+    typeof req.query.tag === "string" ? req.query.tag : undefined;
 
   try {
     const allBlogs = await prisma.blog.findMany({
@@ -399,9 +483,14 @@ export const getPublishedBlogsHandler = async (
         user: {
           username,
         },
+        // optional tag filter: /public/:username/blog?tag=react
+        ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
       },
+      orderBy: { published_at: "desc" },
       include: {
         cover_image: true,
+        series: { select: { title: true, slug: true } },
+        tags: { select: { name: true, slug: true } },
         user: {
           select: { username: true, first_name: true, last_name: true },
         },
@@ -425,6 +514,8 @@ export const getPublishedBlogsHandler = async (
       created_at: b.created_at,
       published_at: b.published_at,
       author: b.user.username, // include for public display
+      series: b.series || null,
+      tags: b.tags,
     }));
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({
@@ -454,6 +545,7 @@ export const getPublishedSingleBlogHandler = async (
       },
       include: {
         cover_image: true,
+        tags: { select: { name: true, slug: true } },
         user: {
           select: { username: true, first_name: true, last_name: true },
         },
@@ -471,6 +563,9 @@ export const getPublishedSingleBlogHandler = async (
       data: { views_count: { increment: 1 } },
     });
 
+    // "Part N of M" + prev/next navigation when this post belongs to a series.
+    const series = await buildSeriesContext(blogDoc);
+
     const formattedBlog = {
       id: blogDoc.id,
       slug: blogDoc.slug,
@@ -483,6 +578,8 @@ export const getPublishedSingleBlogHandler = async (
       reading_time: blogDoc.reading_time,
       published_at: blogDoc.published_at,
       author: blogDoc.user.username,
+      series,
+      tags: blogDoc.tags,
     };
 
     res.status(HTTP_STATUS_CODES.StatusOk).json({

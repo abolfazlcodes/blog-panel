@@ -10,6 +10,7 @@ export interface IProjectCardProps {
   updated_at: string;
   is_draft: boolean;
   is_featured: boolean;
+  tags?: string[];
 }
 
 export interface IProjectFormProps {
@@ -19,6 +20,7 @@ export interface IProjectFormProps {
   content: string;
   cover_image: string;
   is_featured: boolean;
+  tags: string[];
 }
 
 export interface IProjectFormDefaultValues extends IProjectFormProps {

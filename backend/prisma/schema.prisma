@@ -26,6 +26,45 @@ model User {
   projects Project[]
   mediaFiles MediaFile[]
   refreshTokens RefreshToken[]
+  series Series[]
+  tags Tag[]
+}
+
+// A blog series groups ordered posts ("Part 1 of N"). A blog belongs to at
+// most one series; a series belongs to one user. Slugs are unique per user so
+// the public URL /public/:username/series/:slug resolves unambiguously.
+model Series {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  blogs Blog[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+}
+
+// Free-form labels shared across a user's blogs and projects. Scoped per user
+// (slug unique per user) so two authors can both have a "react" tag.
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  blogs    Blog[]
+  projects Project[]
+
+  @@unique([userId, slug])
+  @@index([userId])
 }
 
 // Opaque, rotating refresh tokens (only a SHA-256 hash is stored).
@@ -59,9 +98,19 @@ model Blog {
 
   userId Int
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   cover_imageId Int?
   cover_image   MediaFile? @relation(fields: [cover_imageId], references: [id])
+
+  // Optional membership in a series. series_order positions this post among its
+  // siblings (lower = earlier). SetNull keeps the blog if its series is deleted.
+  seriesId     Int?
+  series       Series? @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  series_order Int?
+
+  tags Tag[]
+
+  @@index([seriesId])
 }
 
 model Project {
@@ -82,7 +131,9 @@ model Project {
  // Relation to MediaFile
   cover_imageId Int?
   cover_image   MediaFile? @relation(fields: [cover_imageId], references: [id])
-} 
+
+  tags Tag[]
+}
 
 
 model MediaFile {

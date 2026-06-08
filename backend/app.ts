@@ -9,6 +9,8 @@ import { router as blogRouter } from "./src/routes/blog.js";
 import { router as mediaFileRouter } from "./src/routes/media-file.js";
 import { router as projectRouter } from "./src/routes/projects.js";
 import { router as profileRouter } from "./src/routes/profile.js";
+import { router as seriesRouter } from "./src/routes/series.js";
+import { router as tagRouter } from "./src/routes/tags.js";
 import { ICustomError } from "./src/types/index.js";
 
 // make sure __dirname is defined for ES modules
@@ -66,6 +68,8 @@ app.use(blogRouter);
 app.use(projectRouter);
 app.use(mediaFileRouter);
 app.use(profileRouter);
+app.use(seriesRouter);
+app.use(tagRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({

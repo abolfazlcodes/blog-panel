@@ -18,6 +18,8 @@ import { HelperText } from "../common/HelperText";
 import ToggleButtonController from "../common/Toggle/toggle-button-controller";
 import CoverUploaderController from "../common/Uploader/CoverUploaderController";
 import { useDeleteBlog } from "@/services/blog/delete-blog";
+import { useGetSeries } from "@/services/series/series-list";
+import TagInput from "../common/TagInput";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -31,6 +33,7 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
     handleSubmit,
     reset,
     setError,
+    watch,
   } = useForm<IBlogFormProps>({
     defaultValues: {
       title: "",
@@ -39,8 +42,14 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
       content: "",
       cover_image: "",
       is_featured: false,
+      seriesId: "",
+      series_order: null,
+      tags: [],
     },
   });
+
+  const { series } = useGetSeries();
+  const selectedSeriesId = watch("seriesId");
 
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
@@ -262,6 +271,72 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
               control={control}
               name="is_featured"
               label={""}
+            />
+          </div>
+
+          <div className="flex flex-col gap-x-4 gap-y-2 md:flex-row">
+            <div className="flex-1 space-y-1">
+              <span className="text-secondary-text text-d-body2">Series</span>
+              <Controller
+                name="seriesId"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    value={field.value}
+                    onChange={(event) => field.onChange(event.target.value)}
+                    className="border-disabled w-full rounded-lg border bg-transparent px-3 py-2 outline-none"
+                  >
+                    <option value="">No series</option>
+                    {(series ?? []).map((item) => (
+                      <option key={item.id} value={String(item.id)}>
+                        {item.title}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
+            </div>
+
+            {selectedSeriesId && (
+              <div className="flex-1 space-y-1">
+                <span className="text-secondary-text text-d-body2">
+                  Part number
+                </span>
+                <Controller
+                  name="series_order"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="number"
+                      min={1}
+                      value={field.value ?? ""}
+                      onChange={(event) =>
+                        field.onChange(
+                          event.target.value === ""
+                            ? null
+                            : Number(event.target.value)
+                        )
+                      }
+                      placeholder="e.g. 1"
+                      className="border-disabled w-full rounded-lg border px-3 py-2 outline-none"
+                    />
+                  )}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-secondary-text text-d-body2">Tags</span>
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <TagInput
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </div>
 

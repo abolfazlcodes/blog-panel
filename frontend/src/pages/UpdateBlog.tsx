@@ -37,6 +37,9 @@ const UpdateBlog = () => {
             title: blogData?.title,
             is_draft: blogData?.is_draft,
             is_featured: blogData?.is_featured,
+            seriesId: blogData?.seriesId ? String(blogData.seriesId) : "",
+            series_order: blogData?.series_order ?? null,
+            tags: blogData?.tags ?? [],
           }}
         />
       </main>

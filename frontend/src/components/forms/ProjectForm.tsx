@@ -18,6 +18,7 @@ import { queryClient } from "@/providers/QueryClientProvider";
 import { usePublishProject } from "@/services/projects/publish-project";
 import CoverUploaderController from "../common/Uploader/CoverUploaderController";
 import { useDeleteProject } from "@/services/projects/delete-project";
+import TagInput from "../common/TagInput";
 
 interface IProjectFormComponentProps {
   defaultValues?: IProjectFormDefaultValues;
@@ -41,6 +42,7 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
       content: "",
       cover_image: "",
       is_featured: false,
+      tags: [],
     },
   });
 
@@ -276,6 +278,20 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
               control={control}
               name="is_featured"
               label={""}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-secondary-text text-d-body2">Tags</span>
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <TagInput
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </div>
 
