@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 
-import AuthLoginForm from "@/components/forms/AuhtLoginForm";
+import AuthSignupForm from "@/components/forms/AuthSignupForm";
 
-const LoginPage = () => {
+const SignupPage = () => {
   return (
     <main className="w-full h-svh md:flex-row flex-col flex items-center justify-center bg-white">
       <div className="bg-success-darker w-full px-12 flex flex-col items-center justify-center h-1/3 md:order-1 md:h-full">
@@ -34,18 +34,18 @@ const LoginPage = () => {
             </h6>
           </div>
 
-          <h4>Welcome Back!</h4>
+          <h4>Create your account</h4>
           <p>
-            Sign in to have access to your content creation dashboard and
-            innovate the world
+            Set up your content workspace and start publishing to your website
+            in minutes.
           </p>
 
-          <AuthLoginForm />
+          <AuthSignupForm />
 
           <p className="text-m-body2 md:text-d-body2">
-            Don&apos;t have an account?{" "}
-            <Link to="/sign-up" className="text-success-darker font-semibold">
-              Sign up
+            Already have an account?{" "}
+            <Link to="/login" className="text-success-darker font-semibold">
+              Log in
             </Link>
           </p>
         </div>
@@ -54,4 +54,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

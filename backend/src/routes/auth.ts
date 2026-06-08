@@ -2,7 +2,12 @@ import express from "express";
 import { body } from "express-validator";
 import rateLimit from "express-rate-limit";
 
-import { createUserHandler, loginHandler } from "../controllers/auth.js";
+import {
+  createUserHandler,
+  loginHandler,
+  logoutHandler,
+  refreshTokenHandler,
+} from "../controllers/auth.js";
 import { errorValidator } from "../middlewares/validator.js";
 
 const router = express.Router();
@@ -77,6 +82,21 @@ router.post(
   ],
   errorValidator,
   loginHandler
+);
+
+router.post(
+  "/refresh",
+  authLimiter,
+  [body("refreshToken").trim().notEmpty().withMessage("Refresh token is required")],
+  errorValidator,
+  refreshTokenHandler
+);
+
+router.post(
+  "/logout",
+  [body("refreshToken").trim().notEmpty().withMessage("Refresh token is required")],
+  errorValidator,
+  logoutHandler
 );
 
 export { router };

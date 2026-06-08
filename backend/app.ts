@@ -20,6 +20,16 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
+// Fail fast on missing critical configuration rather than booting a broken server.
+const REQUIRED_ENV = ["JWT_SECRET_KEY", "DATABASE_URL"] as const;
+const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
+if (missingEnv.length > 0) {
+  console.error(
+    `Missing required environment variables: ${missingEnv.join(", ")}`
+  );
+  process.exit(1);
+}
+
 const app = express();
 
 // const globalLimiter = rateLimit({

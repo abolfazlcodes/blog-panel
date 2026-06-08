@@ -7,6 +7,7 @@ import ProtectedRoute from "./pages/ProtectedRoute";
 import { ClipLoader } from "react-spinners";
 
 const LoginPage = lazy(() => import("./pages/Login"));
+const SignupPage = lazy(() => import("./pages/Signup"));
 const HomePage = lazy(() => import("./pages/Home"));
 const BlogPage = lazy(() => import("./pages/Blogs"));
 const AddBlogPagePage = lazy(() => import("./pages/AddBlog"));
@@ -27,6 +28,7 @@ function App() {
       <QueryProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignupPage />} />
 
           <Route
             element={
