@@ -10,6 +10,11 @@ import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
 import { deleteMediaFileById } from "./media-file.js";
 import { resolveTagConnections } from "./tags.js";
 import { buildSeriesContext } from "./series.js";
+import {
+  buildPaginationMeta,
+  buildSearchFilter,
+  parsePagination,
+} from "../utils/pagination.js";
 
 // Validate that a series (when provided) belongs to the user, and normalize the
 // order. Returns the numeric id to connect (or null to detach) plus the order.
@@ -55,16 +60,24 @@ export const getAllBlogsHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
+  const pagination = parsePagination(req);
+  const where = { userId, ...buildSearchFilter(req.query.q) };
 
   try {
-    const allBlogs = await prisma.blog.findMany({
-      where: { userId: userId },
-      include: {
-        cover_image: true, // include relation
-        series: { select: { id: true, title: true, slug: true } },
-        tags: { select: { name: true } },
-      },
-    });
+    const [allBlogs, total] = await Promise.all([
+      prisma.blog.findMany({
+        where,
+        include: {
+          cover_image: true, // include relation
+          series: { select: { id: true, title: true, slug: true } },
+          tags: { select: { name: true } },
+        },
+        orderBy: { updated_at: "desc" },
+        skip: pagination.skip,
+        take: pagination.take,
+      }),
+      prisma.blog.count({ where }),
+    ]);
 
     if (!allBlogs) {
       const error = new CustomError("Something went wrong. Try again later.");
@@ -95,6 +108,7 @@ export const getAllBlogsHandler = async (
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
       data: allBlogsFormatted,
+      meta: buildPaginationMeta(total, pagination),
     });
   } catch (error) {
     next(error);
@@ -475,27 +489,35 @@ export const getPublishedBlogsHandler = async (
   const username = req.params.username;
   const tagSlug =
     typeof req.query.tag === "string" ? req.query.tag : undefined;
+  const pagination = parsePagination(req);
+
+  const where = {
+    is_draft: false,
+    user: { username },
+    // optional tag filter: /public/:username/blog?tag=react
+    ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
+    // optional full-text search: ?q=...
+    ...buildSearchFilter(req.query.q),
+  };
 
   try {
-    const allBlogs = await prisma.blog.findMany({
-      where: {
-        is_draft: false,
-        user: {
-          username,
+    const [allBlogs, total] = await Promise.all([
+      prisma.blog.findMany({
+        where,
+        orderBy: { published_at: "desc" },
+        skip: pagination.skip,
+        take: pagination.take,
+        include: {
+          cover_image: true,
+          series: { select: { title: true, slug: true } },
+          tags: { select: { name: true, slug: true } },
+          user: {
+            select: { username: true, first_name: true, last_name: true },
+          },
         },
-        // optional tag filter: /public/:username/blog?tag=react
-        ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
-      },
-      orderBy: { published_at: "desc" },
-      include: {
-        cover_image: true,
-        series: { select: { title: true, slug: true } },
-        tags: { select: { name: true, slug: true } },
-        user: {
-          select: { username: true, first_name: true, last_name: true },
-        },
-      },
-    });
+      }),
+      prisma.blog.count({ where }),
+    ]);
 
     if (!allBlogs) {
       const error = new CustomError("Something went wrong. Try again later.");
@@ -521,6 +543,7 @@ export const getPublishedBlogsHandler = async (
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
       data: formattedBlogs,
+      meta: buildPaginationMeta(total, pagination),
     });
   } catch (error) {
     next(error);

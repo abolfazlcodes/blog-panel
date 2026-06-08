@@ -8,6 +8,11 @@ import HTTP_STATUS_CODES from "../utils/statusCodes.js";
 import { sanitizeRichTextContent } from "../utils/sanitize-html.js";
 import { deleteMediaFileById } from "./media-file.js";
 import { resolveTagConnections } from "./tags.js";
+import {
+  buildPaginationMeta,
+  buildSearchFilter,
+  parsePagination,
+} from "../utils/pagination.js";
 
 export const getAllProjectsHandler = async (
   req: Request,
@@ -16,17 +21,23 @@ export const getAllProjectsHandler = async (
 ) => {
   // @ts-ignore
   const userId = req?.userId;
+  const pagination = parsePagination(req);
+  const where = { userId, ...buildSearchFilter(req.query.q) };
 
   try {
-    const allProjects = await prisma.project.findMany({
-      where: {
-        userId: userId,
-      },
-      include: {
-        cover_image: true,
-        tags: { select: { name: true } },
-      },
-    });
+    const [allProjects, total] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        include: {
+          cover_image: true,
+          tags: { select: { name: true } },
+        },
+        orderBy: { updated_at: "desc" },
+        skip: pagination.skip,
+        take: pagination.take,
+      }),
+      prisma.project.count({ where }),
+    ]);
 
     if (!allProjects) {
       const error = new CustomError("Something went wrong. Try again later.");
@@ -51,6 +62,7 @@ export const getAllProjectsHandler = async (
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
       data: formattedProjects,
+      meta: buildPaginationMeta(total, pagination),
     });
   } catch (error) {
     next(error);
@@ -394,24 +406,32 @@ export const getPublishedProjectHandler = async (
   const username = req.params.username;
   const tagSlug =
     typeof req.query.tag === "string" ? req.query.tag : undefined;
+  const pagination = parsePagination(req);
+
+  const where = {
+    is_draft: false,
+    user: { username },
+    // optional tag filter: /public/:username/project?tag=react
+    ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
+    // optional full-text search: ?q=...
+    ...buildSearchFilter(req.query.q),
+  };
 
   try {
-    const allPublishedProjects = await prisma.project.findMany({
-      where: {
-        is_draft: false,
-        user: {
-          username,
+    const [allPublishedProjects, total] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        orderBy: { published_at: "desc" },
+        skip: pagination.skip,
+        take: pagination.take,
+        include: {
+          cover_image: true,
+          tags: { select: { name: true, slug: true } },
+          user: true,
         },
-        // optional tag filter: /public/:username/project?tag=react
-        ...(tagSlug ? { tags: { some: { slug: tagSlug } } } : {}),
-      },
-      orderBy: { published_at: "desc" },
-      include: {
-        cover_image: true,
-        tags: { select: { name: true, slug: true } },
-        user: true,
-      },
-    });
+      }),
+      prisma.project.count({ where }),
+    ]);
 
     if (!allPublishedProjects) {
       const error = new CustomError("Something went wrong. Try again later.");
@@ -436,6 +456,7 @@ export const getPublishedProjectHandler = async (
     res.status(HTTP_STATUS_CODES.StatusOk).json({
       message: "successful",
       data: formattedProjects,
+      meta: buildPaginationMeta(total, pagination),
     });
   } catch (error) {
     next(error);

@@ -1,19 +1,31 @@
 import { readData } from "@/core/http-service";
 import type { TProjectsDataResponseProps } from "@/types/projects.types";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-const getProjectsList = async () => {
-  return await readData<TProjectsDataResponseProps>("/project");
+interface IProjectsListParams {
+  q?: string;
+  page?: number;
+}
+
+const getProjectsList = async ({ q, page }: IProjectsListParams) => {
+  return await readData<TProjectsDataResponseProps>("/project", {
+    params: { q: q || undefined, page },
+  });
 };
 
-export const useGetProjects = () => {
+export const useGetProjects = ({
+  q = "",
+  page = 1,
+}: IProjectsListParams = {}) => {
   const { data, isPending } = useQuery({
-    queryKey: ["projects"],
-    queryFn: getProjectsList,
+    queryKey: ["projects", { q, page }],
+    queryFn: () => getProjectsList({ q, page }),
+    placeholderData: keepPreviousData, // keep the old page visible while fetching
   });
 
   return {
     isGettingProjects: isPending,
     projects: data?.data?.data,
+    meta: data?.data?.meta,
   };
 };
