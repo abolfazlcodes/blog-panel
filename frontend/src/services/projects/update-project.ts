@@ -11,7 +11,7 @@ const updateProject = async (id: string, data: IProjectFormProps) => {
 
 export const useUpdateProject = () => {
   const mutation = useMutation({
-    mutationKey: ["create-project"],
+    mutationKey: ["update-project"],
     mutationFn: ({ data, id }: { data: IProjectFormProps; id: string }) =>
       updateProject(id, data),
   });

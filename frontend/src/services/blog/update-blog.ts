@@ -11,7 +11,7 @@ const updateBlog = async (id: string, data: IBlogFormProps) => {
 
 export const useUpdateBlog = () => {
   const mutation = useMutation({
-    mutationKey: ["create-blog"],
+    mutationKey: ["update-blog"],
     mutationFn: ({ data, id }: { data: IBlogFormProps; id: string }) =>
       updateBlog(id, data),
   });

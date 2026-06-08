@@ -202,7 +202,7 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
         <Button
           size="sm"
           type="submit"
-          form="add-blog"
+          form="add-project"
           variant="outlined"
           colorType="success"
         >
@@ -224,7 +224,7 @@ const ProjectForm: React.FC<IProjectFormComponentProps> = ({
 
       <section className="" id="add-project-section">
         <form
-          id="add-blog"
+          id="add-project"
           className="space-y-4"
           onSubmit={handleSubmit(handleProjectSubmit)}
         >

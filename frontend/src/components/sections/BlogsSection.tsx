@@ -6,9 +6,11 @@ const BlogsSection = () => {
   const { blogs, isGettingBlogs } = useGetBlogs();
 
   if (isGettingBlogs) {
-    <section className="flex items-center justify-center p-2 my-10">
-      <ClipLoader size={6} />
-    </section>;
+    return (
+      <section className="flex items-center justify-center p-2 my-10">
+        <ClipLoader size={6} />
+      </section>
+    );
   }
 
   if (!blogs || blogs?.length === 0) {
