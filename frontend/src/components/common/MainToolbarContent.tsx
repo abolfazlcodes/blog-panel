@@ -3,6 +3,7 @@ import { Spacer } from "../tiptap-ui-primitive/spacer";
 import { ToolbarGroup, ToolbarSeparator } from "../tiptap-ui-primitive/toolbar";
 import { BlockquoteButton } from "../tiptap-ui/blockquote-button";
 import { CodeBlockButton } from "../tiptap-ui/code-block-button";
+import { CodeBlockLanguageSelect } from "./CodeBlockLanguageSelect";
 import {
   ColorHighlightPopover,
   ColorHighlightPopoverButton,
@@ -43,6 +44,7 @@ const MainToolbarContent = ({
         />
         <BlockquoteButton />
         <CodeBlockButton />
+        <CodeBlockLanguageSelect />
       </ToolbarGroup>
 
       <ToolbarSeparator />
