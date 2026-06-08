@@ -6,9 +6,11 @@ const ProjectSection = () => {
   const { isGettingProjects, projects } = useGetProjects();
 
   if (isGettingProjects) {
-    <section className="flex items-center justify-center p-2 my-10">
-      <ClipLoader size={6} />
-    </section>;
+    return (
+      <section className="flex items-center justify-center p-2 my-10">
+        <ClipLoader size={6} />
+      </section>
+    );
   }
 
   if (!projects || projects?.length === 0) {

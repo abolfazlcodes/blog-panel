@@ -494,27 +494,24 @@ export const getPublishedSingleBlogHandler = async (
   }
 };
 
+// Public, anonymous "like" — no auth. Increments by 1 atomically (the client
+// value is not trusted) and only for a published post owned by `:username`.
 export const updateLikesCountHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // @ts-ignore
-  const userId = req?.userId;
   const blogId = parseInt(req.params.id);
   const username = req.params.username;
-  const { likes_count } = req.body;
 
   try {
-    // find the blog
-    const blog = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findFirst({
       where: {
-        id: +blogId,
-        userId: userId,
-        user: {
-          username,
-        },
+        id: blogId,
+        is_draft: false,
+        user: { username },
       },
+      select: { id: true },
     });
 
     if (!blog) {
@@ -523,28 +520,15 @@ export const updateLikesCountHandler = async (
       throw error;
     }
 
-    const updatedContent = {
-      ...blog,
-      likes_count: +blog?.likes_count + likes_count,
-    };
-
     const updatedBlog = await prisma.blog.update({
-      where: {
-        id: +blogId,
-        userId: userId,
-      },
-      data: updatedContent,
+      where: { id: blog.id },
+      data: { likes_count: { increment: 1 } },
+      select: { likes_count: true },
     });
 
-    if (!updatedBlog) {
-      const error = new CustomError("Could not update blog");
-      error.statusCode = HTTP_STATUS_CODES.StatusInternalServerError;
-      throw error;
-    }
-
     res.status(HTTP_STATUS_CODES.StatusOk).json({
-      message: "Blog was updated successfully",
-      data: [],
+      message: "Blog was liked successfully",
+      data: { likes_count: updatedBlog.likes_count },
     });
   } catch (error) {
     next(error);
