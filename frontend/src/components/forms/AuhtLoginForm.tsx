@@ -64,7 +64,8 @@ const AuthLoginForm = () => {
       <div className="w-full mt-10">
         <Button
           colorType="success"
-          className="w-full"
+          size="lg"
+          className="w-full text-base font-semibold shadow-lg shadow-success/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-success/50"
           type="submit"
           form="login-form"
           disabled={isLoggingIn}
