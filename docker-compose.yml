@@ -1,5 +1,8 @@
 name: blog-panel
 
+# Local development / single-host stack. For production Swarm, use
+# docker-stack.yml (see DEPLOY.md).
+
 services:
   db:
     image: postgres:16
@@ -17,13 +20,14 @@ services:
       context: ./backend
     env_file:
       - ./backend/.env
+    # host 4000 -> container 8080 (the app's default port). The image
+    # entrypoint runs `prisma migrate deploy` then starts the server.
     ports:
-      - "4000:4000"
+      - "4000:8080"
     depends_on:
       - db
-    command: sh -c "npx prisma migrate deploy && node dist/app.js"
     volumes:
-      - uploads_data:/app/uploads # persist uploads
+      - uploads_data:/app/dist/src/uploads # persist uploads
 
   frontend:
     build:
@@ -38,4 +42,4 @@ services:
 
 volumes:
   db_data:
-  uploads_data: # named volume form uploads
+  uploads_data: # named volume for uploads

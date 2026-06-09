@@ -118,5 +118,10 @@ A single published blog includes a `series` object when it belongs to one:
 
 ## Deployment
 
-Production Docker images and a Docker Swarm stack are provided — see the deploy
-guide (added in the deployment phase).
+Production multi-stage Dockerfiles (`backend/Dockerfile`, `frontend/Dockerfile`)
+and a Docker Swarm stack (`docker-stack.yml`) are provided — non-root backend,
+healthchecks, graceful shutdown, secrets, persistent volumes, and an
+nginx-served SPA. See **[DEPLOY.md](DEPLOY.md)** for the full guide.
+
+For local development, `docker compose up --build` runs the whole stack
+(panel on `:5173`, API on `:4000`).

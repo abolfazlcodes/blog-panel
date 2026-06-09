@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 import rateLimit from "express-rate-limit";
 
 import { router as authRouter } from "./src/routes/auth.js";
@@ -22,6 +23,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// Support Docker/Swarm secrets: when VAR_FILE points to a file, load VAR from
+// it (unless VAR is already set directly). Mirrors what the entrypoint does for
+// the Prisma CLI, so running `node dist/app.js` standalone also works.
+for (const key of ["JWT_SECRET_KEY", "DATABASE_URL"]) {
+  const filePath = process.env[`${key}_FILE`];
+  if (filePath && !process.env[key]) {
+    try {
+      process.env[key] = fs.readFileSync(filePath, "utf8").trim();
+    } catch {
+      console.error(`Failed to read ${key}_FILE at ${filePath}`);
+    }
+  }
+}
 
 const isProduction = process.env.NODE_ENV === "production";
 
