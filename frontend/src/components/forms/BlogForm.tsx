@@ -13,13 +13,13 @@ import TextFieldController from "../common/text-field/TextFieldController";
 import BlogTextEditor, { MAX_FILE_SIZE } from "../common/BlogTextEditor";
 import { useUpdateBlog } from "@/services/blog/update-blog";
 import { usePublishBlog } from "@/services/blog/publish-blog";
-import { ClipLoader } from "react-spinners";
 import { HelperText } from "../common/HelperText";
 import ToggleButtonController from "../common/Toggle/toggle-button-controller";
 import CoverUploaderController from "../common/Uploader/CoverUploaderController";
 import { useDeleteBlog } from "@/services/blog/delete-blog";
 import { useGetSeries } from "@/services/series/series-list";
 import TagInput from "../common/TagInput";
+import { EyeOff, Save, Send, Trash2 } from "lucide-react";
 
 interface IBlogFormComponentProps {
   defaultValues?: IBlogFormDefaultValues;
@@ -178,43 +178,56 @@ const BlogForm: React.FC<IBlogFormComponentProps> = ({ defaultValues }) => {
 
   return (
     <>
-      <header className="flex items-center mb-3 gap-2 justify-end">
-        {defaultValues && (
+      <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold">
+          {defaultValues ? "Edit blog" : "Write a blog"}
+        </h1>
+
+        <div className="flex items-center gap-2">
+          {defaultValues && (
+            <Button
+              size="sm"
+              colorType="error"
+              variant="outlined"
+              disabled={!defaultValues?.is_draft}
+              isLoading={deleteBlogMutation?.isDeleting}
+              icon={<Trash2 size={16} />}
+              onClick={deleteBlogHandler}
+            >
+              Delete
+            </Button>
+          )}
+
           <Button
-            colorType="error"
+            size="sm"
+            type="submit"
+            form="add-blog"
             variant="outlined"
-            disabled={!defaultValues?.is_draft}
-            onClick={deleteBlogHandler}
+            colorType="success"
+            isLoading={isLoading}
+            icon={<Save size={16} />}
           >
-            {deleteBlogMutation?.isDeleting ? (
-              <ClipLoader size={10} />
-            ) : (
-              "Delete"
-            )}
+            Save
           </Button>
-        )}
 
-        <Button
-          size="sm"
-          type="submit"
-          form="add-blog"
-          variant="outlined"
-          colorType="success"
-        >
-          {isLoading ? <ClipLoader size={10} /> : "Save"}
-        </Button>
-
-        {defaultValues && (
-          <Button size="sm" colorType="success" onClick={handlePublishBlog}>
-            {isPublishing ? (
-              <ClipLoader size={10} />
-            ) : defaultValues?.is_draft ? (
-              "Publish"
-            ) : (
-              "Unpublish"
-            )}
-          </Button>
-        )}
+          {defaultValues && (
+            <Button
+              size="sm"
+              colorType="success"
+              isLoading={isPublishing}
+              icon={
+                defaultValues?.is_draft ? (
+                  <Send size={16} />
+                ) : (
+                  <EyeOff size={16} />
+                )
+              }
+              onClick={handlePublishBlog}
+            >
+              {defaultValues?.is_draft ? "Publish" : "Unpublish"}
+            </Button>
+          )}
+        </div>
       </header>
 
       <section className="" id="add-blog-section">
