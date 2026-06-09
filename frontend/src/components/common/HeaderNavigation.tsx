@@ -25,22 +25,25 @@ const HeaderNavigation = () => {
   const closeMobileSidebarHandler = () => setIsMobileSidebarOpen(false);
 
   return (
-    <header className="flex px-4 py-2 max-w-[1280px] w-full mx-auto shadow-bg-field items-center justify-between">
-      <div className="flex items-center gap-2">
-        <NavLink
-          to={"/"}
-          className={"block w-10 rounded-full overflow-hidden h-10 relative"}
-        >
-          <img
-            src="/notiq-logo.png"
-            className="w-full h-full absolute object-cover object-center"
-          />
-        </NavLink>
+    <header className="shadow-bg-field w-full">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-2">
+          <NavLink
+            to={"/"}
+            className={"block w-10 rounded-full overflow-hidden h-10 relative"}
+          >
+            <img
+              src="/notiq-logo.png"
+              className="w-full h-full absolute object-cover object-center"
+            />
+          </NavLink>
 
-        <p className="">Welcome, {userInfo?.name?.split(" ")[0]}</p>
-      </div>
+          <p className="font-medium whitespace-nowrap">
+            Welcome, {userInfo?.name?.split(" ")[0]}
+          </p>
+        </div>
 
-      <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4">
         <ul className="items-center gap-x-3 hidden lg:flex">
           {SIDEBAR_LINKS?.slice(1)?.map((item) => (
             <NavLink
@@ -65,7 +68,7 @@ const HeaderNavigation = () => {
               variant="contained"
               colorType="error"
               size="sm"
-              className="rounded-full flex items-center justify-center gap-x-4 p-2 cursor-pointer font-semibold"
+              className="cursor-pointer rounded-full px-4 font-semibold"
             >
               Log out
             </Button>
@@ -92,10 +95,11 @@ const HeaderNavigation = () => {
           />
         </div>
 
-        <MobileSidebar
-          isOpen={isMobileSidebarOpen}
-          onClose={closeMobileSidebarHandler}
-        />
+          <MobileSidebar
+            isOpen={isMobileSidebarOpen}
+            onClose={closeMobileSidebarHandler}
+          />
+        </div>
       </div>
     </header>
   );
