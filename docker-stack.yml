@@ -5,7 +5,8 @@
 # Prerequisites (see DEPLOY.md):
 #   - Built + pushed images (REGISTRY/notiq-backend, REGISTRY/notiq-frontend)
 #   - Swarm secrets: jwt_secret, db_password, db_url
-#   - Optional env overrides: REGISTRY, TAG, CORS_ORIGINS, POSTGRES_USER, POSTGRES_DB
+#   - Config via env (or stack.env): REGISTRY, TAG, CORS_ORIGINS, POSTGRES_USER,
+#     POSTGRES_DB, BACKEND_PORT, FRONTEND_PORT
 
 services:
   db:
@@ -51,7 +52,8 @@ services:
     networks:
       - blog_net
     ports:
-      - "8080:8080"
+      # host:container — host port configurable so it can sit behind a proxy
+      - "${BACKEND_PORT:-8080}:8080"
     init: true
     # Healthcheck + graceful shutdown come from the image (Dockerfile + app.ts).
     deploy:
@@ -72,7 +74,7 @@ services:
     networks:
       - blog_net
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
     deploy:
       replicas: 2
       restart_policy:
