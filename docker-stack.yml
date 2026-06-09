@@ -1,0 +1,102 @@
+# Production Docker Swarm stack for Notiq.
+#
+#   docker stack deploy -c docker-stack.yml notiq
+#
+# Prerequisites (see DEPLOY.md):
+#   - Built + pushed images (REGISTRY/notiq-backend, REGISTRY/notiq-frontend)
+#   - Swarm secrets: jwt_secret, db_password, db_url
+#   - Optional env overrides: REGISTRY, TAG, CORS_ORIGINS, POSTGRES_USER, POSTGRES_DB
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-blog_user}
+      POSTGRES_DB: ${POSTGRES_DB:-blog_panel}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - blog_net
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-blog_user} -d ${POSTGRES_DB:-blog_panel}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      replicas: 1
+      placement:
+        # The named volume lives on one node; pin Postgres to it. For HA, use a
+        # replicated volume driver and a fixed node constraint instead.
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+
+  backend:
+    image: ${REGISTRY:-localhost}/notiq-backend:${TAG:-latest}
+    environment:
+      NODE_ENV: production
+      PORT: "8080"
+      DATABASE_URL_FILE: /run/secrets/db_url
+      JWT_SECRET_KEY_FILE: /run/secrets/jwt_secret
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+    secrets:
+      - db_url
+      - jwt_secret
+    volumes:
+      - uploads_data:/app/dist/src/uploads
+    networks:
+      - blog_net
+    ports:
+      - "8080:8080"
+    init: true
+    # Healthcheck + graceful shutdown come from the image (Dockerfile + app.ts).
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      update_config:
+        order: start-first
+        parallelism: 1
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
+
+  frontend:
+    image: ${REGISTRY:-localhost}/notiq-frontend:${TAG:-latest}
+    networks:
+      - blog_net
+    ports:
+      - "80:80"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        order: start-first
+        parallelism: 1
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+networks:
+  blog_net:
+    driver: overlay
+
+volumes:
+  db_data:
+  uploads_data:
+
+secrets:
+  jwt_secret:
+    external: true
+  db_password:
+    external: true
+  db_url:
+    external: true
