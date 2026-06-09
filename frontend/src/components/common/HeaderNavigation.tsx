@@ -1,4 +1,4 @@
-// import { ArrowDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { NavLink, useNavigate } from "react-router";
 import { Button } from "./Button";
 import { useGetProfile } from "@/services/user-profile";
@@ -44,21 +44,28 @@ const HeaderNavigation = () => {
         </div>
 
         <div className="flex items-center gap-x-4">
-        <ul className="items-center gap-x-3 hidden lg:flex">
-          {SIDEBAR_LINKS?.slice(1)?.map((item) => (
-            <NavLink
-              key={item?.id}
-              to={item?.href}
-              className={({ isActive }) =>
-                customTwMerge(
-                  "hover:text-success font-medium text-d-subtitle2 transition-all duration-500 ease-in-out",
-                  isActive && "text-success hover:text-success font-semibold"
-                )
-              }
-            >
-              {item?.title}
-            </NavLink>
-          ))}
+        <ul className="hidden items-center gap-x-2 lg:flex">
+          {SIDEBAR_LINKS?.slice(1)?.map((item) => {
+            const isCreate = item?.href?.startsWith("/add-");
+            return (
+              <li key={item?.id}>
+                <NavLink
+                  to={item?.href}
+                  className={({ isActive }) =>
+                    isCreate
+                      ? "bg-success hover:bg-success-dark hover:shadow-success text-d-subtitle2 flex items-center gap-1.5 rounded-full px-4 py-2 font-semibold text-white transition-all duration-300"
+                      : customTwMerge(
+                          "text-secondary-text hover:bg-success/8 hover:text-success text-d-subtitle2 rounded-full px-3 py-2 font-medium transition-all duration-300",
+                          isActive && "bg-success/10 text-success font-semibold"
+                        )
+                  }
+                >
+                  {isCreate && <Plus size={16} />}
+                  {item?.title}
+                </NavLink>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="hidden lg:block">

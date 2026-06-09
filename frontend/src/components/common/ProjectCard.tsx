@@ -9,6 +9,7 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
   is_draft,
   id,
   is_featured,
+  tags,
 }) => {
   return (
     <article className="group hover:shadow-drop-down transition-all duration-300 hover:-translate-y-2 w-full bg-white rounded-lg shadow-card overflow-hidden p-6">
@@ -28,12 +29,18 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
 
         <div className="flex items-center gap-2">
           {is_featured && (
-            <span className="bg-success-lighter text-success text-m-body2 flex items-center justify-center text-center w-max py-2 px-4 uppercase">
+            <span className="bg-success-lighter text-success text-d-caption flex w-max items-center justify-center rounded-full px-3 py-1 font-semibold uppercase">
               featured
             </span>
           )}
-          <span className="bg-error-lighter text-error text-m-body2 flex items-center justify-center text-center w-max py-2 px-4 uppercase">
-            {is_draft ? "not published" : "published"}
+          <span
+            className={`text-d-caption flex w-max items-center justify-center rounded-full px-3 py-1 font-semibold uppercase ${
+              is_draft
+                ? "bg-warning-lighter text-warning"
+                : "bg-success-lighter text-success"
+            }`}
+          >
+            {is_draft ? "draft" : "published"}
           </span>
         </div>
 
@@ -48,22 +55,19 @@ const ProjectCard: React.FC<IProjectCardProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {/* //todo: for showing the count for comment on the blog for future */}
-              {/* <div className="flex items-center text-secondary-text text-d-caption gap-1">
-                <MessageCircle size={16} />
-                <span>4</span>
-              </div> */}
-
-              {/* <span className="text-secondary-text text-d-caption">|</span> */}
-
-              <div className="flex items-center text-secondary-text text-d-caption gap-1">
-                <span>2 min read</span>
-              </div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {tags?.slice(0, 3).map((tag) => (
+                <span
+                  key={tag}
+                  className="bg-success/10 text-success text-d-caption rounded-full px-2 py-0.5"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <span className="text-secondary-text text-d-caption">
                 {convertDateFormat(created_at)}
               </span>
